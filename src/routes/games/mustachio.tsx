@@ -7,8 +7,11 @@ export const Route = createFileRoute('/games/mustachio')({
   component: MustachioGame,
 })
 
+let gameStarted = false
 function MustachioGame() {
   useEffect(() => {
+    if (gameStarted) return
+    gameStarted = true
     startMustachio('game-container')
   }, [])
 
