@@ -1,4 +1,3 @@
-import { MobileControls } from '@/shared/mobile-controls'
 import { createFileRoute } from '@tanstack/react-router'
 import { startMustachio } from 'mustachio-game'
 import { useEffect } from 'react'
@@ -15,8 +14,6 @@ function MustachioGame() {
     startMustachio('game-container')
   }, [])
 
-  const useMobileControls = window.innerWidth <= 1000
-
   return (
     <div>
       <h1>Mustachio</h1>
@@ -25,7 +22,6 @@ function MustachioGame() {
         style={{ height: '36vw', width: '64vw', margin: 'auto' }}
         id="game-container"
       ></div>
-      {useMobileControls && <MobileControls />}
     </div>
   )
 }
