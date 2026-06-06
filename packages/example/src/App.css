@@ -1,0 +1,41 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.map {
+  display: grid;
+  margin: 0 auto;
+  background-color: black;
+}
+
+.block {
+  width: 20px;
+  height: 20px;
+  background-color: black;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.block.empty::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: block;
+  width: 25%;
+  height: 25%;
+  border-radius: 50%;
+  background-color: #FFF;
+}
+
+.block.wall {
+  border: 1px solid white;
+}
+
+.block.ghost-house {
+  border: 1px solid blue;
+}
