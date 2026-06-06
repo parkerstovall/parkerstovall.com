@@ -1,0 +1,25 @@
+name: Tag and Release on Main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  publish-package:
+    uses: 'parkerstovall/workflows/.github/workflows/Publish_NPM.yaml@main'
+    with:
+      package_directory: packages/pac-man-phaser
+    secrets:
+      npm_token: ${{ secrets.NPM_AUTH_TOKEN }}
+
+  update-main-site:
+    if: ${{ needs.publish-package.outputs.created_tag == 'true' }}
+    uses: 'parkerstovall/workflows/.github/workflows/Push_PackageUpdate.yaml@main'
+    needs: publish-package
+    with:
+      repo: 'parkerstovall/parker-stovall.com'
+      package_name: 'pac-man-phaser'
+    secrets:
+      repo_token: ${{ secrets.CROSS_REPO_TOKEN }}

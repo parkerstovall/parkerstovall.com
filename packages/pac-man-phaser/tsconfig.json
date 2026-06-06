@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+      "outDir": "dist",
+      "declaration": true,
+      "declarationMap": true,
+      "sourceMap": true,
+      "target": "esnext",
+      "module": "ESNext",
+      "moduleResolution": "Node",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "jsx": "react-jsx"
+    },
+    "include": ["src", "tsup.config.ts"]
+  }
+  
