@@ -1,0 +1,16 @@
+{
+    "name": "pac-man-monorepo",
+    "private": true,
+    "scripts": {
+        "dev": "concurrently \"npm run dev --prefix packages/example\" \"npm run dev --prefix packages/pac-man-phaser\"",
+        "lint": "cd packages/example && npm run lint && cd ../pac-man-phaser && npm run lint",
+        "patch": "cd packages/pac-man-phaser && npm run patch"
+    },
+    "workspaces": [
+        "packages/*"
+    ],
+    "devDependencies": {
+        "concurrently": "^9.2.1",
+        "tsup": "^8.5.1"
+    }
+}
