@@ -1,0 +1,14 @@
+{
+    "name": "map-generator-monorepo",
+    "private": true,
+    "scripts": {
+      "dev": "concurrently \" cd packages/example && npm run dev \" \" cd packages/pac-man-map-generator && npm run dev \"",
+      "lint": "cd packages/example && npm run lint && cd ../pac-man-map-generator && npm run lint"
+    },
+    "workspaces": [
+        "packages/*"
+    ],
+    "devDependencies": {
+        "concurrently": "^9.2.1"
+    }
+}
