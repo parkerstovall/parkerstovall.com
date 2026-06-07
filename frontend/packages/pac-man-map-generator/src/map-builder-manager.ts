@@ -37,7 +37,7 @@ export class MapBuilderManager {
       ignoreDir.push({ x: 0, y: 1 }) // Ignore down
     }
 
-    let startingDirection = getRandomDirection(ignoreDir)
+    const startingDirection = getRandomDirection(ignoreDir)
     if (!startingDirection) {
       this.jobsDone = true
       return
@@ -57,8 +57,6 @@ export class MapBuilderManager {
           opts: args.opts,
         }),
       )
-
-      startingDirection = getRandomDirection(ignoreDir)
     }
   }
 
