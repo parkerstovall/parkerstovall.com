@@ -56,7 +56,7 @@ jobs:
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
-          source: ./app/dist
+          source: ${{ github.workspace }}/frontend/app/dist
           destination: ./_site
 
       - name: Upload artifact
