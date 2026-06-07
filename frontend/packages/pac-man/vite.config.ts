@@ -13,7 +13,7 @@ export default defineConfig({
       fileName: 'index' 
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'phaser']
+      external: ['react', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-dom', 'phaser']
     }
   }
 })

@@ -37,7 +37,7 @@
     "phaser": "^4.1.0"
   },
   "peerDependencies": {
-    "phaser": "^3.90.0"
+    "phaser": "^4.1.0"
   },
   "prettier": {
     "singleQuote": true,

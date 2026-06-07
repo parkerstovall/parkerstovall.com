@@ -1,4 +1,5 @@
 import { BELOW_PLAYER_DEPTH, BLOCK_SIZE, ITEM_SPEED } from '../../constants'
+import Phaser from 'phaser'
 import type { GameScene } from '../../scenes/GameScene'
 
 export abstract class Item extends Phaser.Physics.Arcade.Sprite {

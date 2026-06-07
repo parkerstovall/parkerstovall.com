@@ -1,3 +1,5 @@
+import Phaser from 'phaser'
+
 export class ScoreDisplay extends Phaser.GameObjects.Text {
   private score: number = 0
 

@@ -1,3 +1,4 @@
+import Phaser from 'phaser'
 import { Item } from './abstracts/item'
 
 export class Pellet extends Item {

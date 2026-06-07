@@ -5,6 +5,7 @@ import {
   STACHE_SEED_HEIGHT,
   BELOW_PLAYER_DEPTH,
 } from '../../constants'
+import Phaser from 'phaser'
 import type { GameScene } from '../../scenes/GameScene'
 import { Enemy } from './Enemy'
 

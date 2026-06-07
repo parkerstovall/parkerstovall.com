@@ -1,4 +1,5 @@
 import { type PacManMap } from '@parkerstovall.com/pac-man-map-generator'
+import Phaser from 'phaser'
 import { Ghost } from './ghost'
 import { Character } from '../characters/character'
 import { directions } from '../../constants'

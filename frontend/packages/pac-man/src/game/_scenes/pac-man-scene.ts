@@ -1,4 +1,4 @@
-import { Scene } from 'phaser'
+import Phaser, { Scene } from 'phaser'
 import { Wall } from '../sprites/wall'
 import { generateMap } from '@parkerstovall.com/pac-man-map-generator'
 import { Pellet } from '../sprites/pellet'

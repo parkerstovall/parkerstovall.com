@@ -6,6 +6,7 @@ import {
   STREAKER_SHOT_COOLDOWN,
   STREAKER_SHOT_DURATION,
 } from '../../constants'
+import Phaser from 'phaser'
 import type { GameScene } from '../../scenes/GameScene'
 import { Enemy } from './Enemy'
 import { Laser } from '../projectiles/Laser'

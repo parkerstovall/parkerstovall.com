@@ -1,3 +1,5 @@
+import Phaser from 'phaser'
+
 export abstract class Item extends Phaser.Physics.Arcade.Sprite {
   abstract readonly points: number
 

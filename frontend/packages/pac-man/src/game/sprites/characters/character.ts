@@ -1,4 +1,5 @@
 import type { PacManMap } from '@parkerstovall.com/pac-man-map-generator'
+import Phaser from 'phaser'
 import { directions } from '../../constants'
 
 export abstract class Character extends Phaser.Physics.Arcade.Sprite {

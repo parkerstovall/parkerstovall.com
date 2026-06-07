@@ -1,4 +1,5 @@
 import type { GameScene, LevelFunction } from '../../scenes/GameScene'
+import Phaser from 'phaser'
 import { Pipe, type PipeOptions } from './Pipe'
 
 export interface WarpPipeOptions extends PipeOptions {

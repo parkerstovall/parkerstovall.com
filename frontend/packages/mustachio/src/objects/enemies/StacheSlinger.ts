@@ -5,6 +5,7 @@ import {
   SLINGER_PATROL_RANGE,
   SLINGER_SHOT_INTERVAL,
 } from '../../constants'
+import Phaser from 'phaser'
 import type { GameScene } from '../../scenes/GameScene'
 import { Enemy } from './Enemy'
 import { FireBall } from '../projectiles/FireBall'

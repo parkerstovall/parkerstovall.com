@@ -224,6 +224,9 @@ importers:
       '@tanstack/router-plugin':
         specifier: ^1.168.15
         version: 1.168.15(@tanstack/react-router@1.170.12(react-dom@19.2.7(react@19.2.7))(react@19.2.7))(vite@8.0.16(esbuild@0.27.7)(jiti@2.7.0)(terser@5.48.0))
+      phaser:
+        specifier: ^4.1.0
+        version: 4.1.0
       react:
         specifier: ^19.2.7
         version: 19.2.7

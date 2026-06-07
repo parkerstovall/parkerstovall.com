@@ -17,6 +17,9 @@ export default defineConfig({
     viteReact(),
     fullReloadAlways,
   ],
+  optimizeDeps: {
+    include: ['phaser'],
+  },
   test: {
     globals: true,
     environment: 'jsdom',
@@ -24,14 +27,14 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     chunkSizeWarningLimit: 1500, // Phaser is a large dependency
-    rollupOptions: {
-      output: {
-        manualChunks: (id) => {
-          if (id.includes('phaser')) {
-            return 'phaser'
-          }
-        },
-      },
-    },
+    // rollupOptions: {
+    //   output: {
+    //     manualChunks: (id) => {
+    //       if (id.includes('phaser')) {
+    //         return 'phaser'
+    //       }
+    //     },
+    //   },
+    // },
   },
 })

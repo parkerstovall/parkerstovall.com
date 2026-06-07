@@ -1,3 +1,5 @@
+import Phaser from 'phaser'
+
 // Asset imports
 import mustachioImg from '../../assets/Mustachio.webp'
 import mustachioFacingLeft from '../../assets/Mustachio_FacingLeft.webp'

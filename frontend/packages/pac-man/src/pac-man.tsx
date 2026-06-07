@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { createPacManScene } from './game/_scenes/pac-man-scene'
+import Phaser from 'phaser'
 
 export function PacMan() {
   const container = useRef<HTMLDivElement>(null)

@@ -1,4 +1,5 @@
 import { type PacManMap } from '@parkerstovall.com/pac-man-map-generator'
+import Phaser from 'phaser'
 import { ActionItem } from './abstracts/action-item'
 
 export class SuperPellet extends ActionItem {

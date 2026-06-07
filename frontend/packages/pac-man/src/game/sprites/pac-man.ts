@@ -1,4 +1,5 @@
 import type { PacManMap } from '@parkerstovall.com/pac-man-map-generator'
+import Phaser from 'phaser'
 import {
   directions,
   PAC_MAN_SPEED,

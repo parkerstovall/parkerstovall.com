@@ -1,3 +1,5 @@
+import Phaser from 'phaser'
+
 export class Wall extends Phaser.Physics.Arcade.Sprite {
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x * 32, y * 32, 'wall')
