@@ -36,10 +36,7 @@ export class Pacman extends Character {
 
   handleDeath() {
     this.setVelocity(0, 0)
-    this.anims.play('pacman-death', false)
-
-    const animDuration = (11 / 8) * 1000 // 10 frames at 8fps = 1.25 seconds
-
+    const animDuration = (11 / 10) * 1000 // 11 frames at 10fps = 1.1 seconds
     this.scene.time.delayedCall(animDuration, () => {
       this.scene.events.emit('game-over')
     })
