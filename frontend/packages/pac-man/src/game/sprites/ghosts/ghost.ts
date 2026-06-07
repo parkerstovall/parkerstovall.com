@@ -43,8 +43,7 @@ export abstract class Ghost extends Character {
     { state: GhostState.SCATTER, duration: 5_000 },
     { state: GhostState.CHASE, duration: 20_000 },
     { state: GhostState.SCATTER, duration: 5_000 },
-    { state: GhostState.CHASE, duration: null }, // -1 means indefinite
-  ]
+    { state: GhostState.CHASE, duration: null }, // null means indefinite
 
   private readonly directionPriority: number[]
 
