@@ -87,8 +87,6 @@ export class PacManScene extends Scene {
     const ghostCollisionGroup = this.physics.add.group([])
 
     this.pacman = new Pacman(this, map)
-    ghostCollisionGroup.add(this.pacman)
-
     this.scoreDisplay = new ScoreDisplay(this, 4, 4)
     this.physics.add.overlap(
       this.pacman,
