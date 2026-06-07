@@ -7,6 +7,7 @@ export default defineConfig({
     bundleTypes: true,
   }), react()],
   build: {
+    outDir: 'dist',
     lib: {
       entry: 'src/index.ts',
       formats: ['es'],
