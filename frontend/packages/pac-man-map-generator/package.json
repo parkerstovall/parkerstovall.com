@@ -1,14 +1,57 @@
 {
-    "name": "map-generator-monorepo",
-    "private": true,
-    "scripts": {
-      "dev": "concurrently \" cd packages/example && npm run dev \" \" cd packages/pac-man-map-generator && npm run dev \"",
-      "lint": "cd packages/example && npm run lint && cd ../pac-man-map-generator && npm run lint"
-    },
-    "workspaces": [
-        "packages/*"
-    ],
-    "devDependencies": {
-        "concurrently": "^9.2.1"
+  "name": "@parkerstovall.com/pac-man-map-generator",
+  "version": "1.1.5",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
     }
+  },
+  "scripts": {
+    "build": "vite build",
+    "lint": "eslint ./src --fix",
+    "patch": "npm version patch --no-git-tag-version",
+    "minor": "npm version minor --no-git-tag-version",
+    "major": "npm version major --no-git-tag-version",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@eslint/markdown": "^8.0.2",
+    "@microsoft/api-extractor": "^7.58.7",
+    "@vitejs/plugin-react": "^6.0.2",
+    "eslint": "^10.4.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "globals": "^17.6.0",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.60.1",
+    "vite": "^8.0.16",
+    "vite-plugin-dts": "^5.0.2"
+  },
+  "keywords": [
+    "pacman",
+    "map",
+    "generator",
+    "game"
+  ],
+  "author": "parkerstovall",
+  "license": "MIT",
+  "description": "Generates a random pacman map",
+  "bugs": {
+    "url": "https://github.com/parkerstovall/pac-man-map-generator/issues"
+  },
+  "homepage": "https://github.com/parkerstovall/pac-man-map-generator",
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "semi": false,
+    "printWidth": 80
+  }
 }

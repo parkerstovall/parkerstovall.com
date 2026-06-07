@@ -21,6 +21,6 @@ jobs:
     with:
       package_directory: packages/pac-man
       repo: 'parkerstovall/pac-man'
-      package_name: 'pac-man-map-generator'
+      package_name: '@parkerstovall.com/pac-man-map-generator'
     secrets:
       repo_token: ${{ secrets.CROSS_REPO_TOKEN }}

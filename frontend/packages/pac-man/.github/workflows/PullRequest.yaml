@@ -17,7 +17,7 @@ jobs:
       - name: Build and Lint
         run: |
           npm ci
-          cd packages/pac-man-phaser
+          cd packages/@parkerstovall.com/pac-man
           npm run lint
           npm run build
           cd ../example

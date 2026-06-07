@@ -1,21 +1,18 @@
 {
   "include": [
     "**/*.ts",
-    "**/*.tsx",
-    "src/game-code/mustachio/classes/game-objects/set-pieces/obstacles/blocks/punchable-blockS"
+    "**/*.tsx"
   ],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["vite/client"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    "noEmit": true,
+    "noEmit": false,
 
     /* Linting */
     "skipLibCheck": true,
@@ -24,9 +21,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
   }
 }

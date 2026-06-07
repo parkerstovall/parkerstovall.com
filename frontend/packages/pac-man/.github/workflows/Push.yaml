@@ -10,7 +10,7 @@ jobs:
   publish-package:
     uses: 'parkerstovall/workflows/.github/workflows/Publish_NPM.yaml@main'
     with:
-      package_directory: packages/pac-man-phaser
+      package_directory: packages/@parkerstovall.com/pac-man
     secrets:
       npm_token: ${{ secrets.NPM_AUTH_TOKEN }}
 
@@ -20,6 +20,6 @@ jobs:
     needs: publish-package
     with:
       repo: 'parkerstovall/parker-stovall.com'
-      package_name: 'pac-man-phaser'
+      package_name: '@parkerstovall.com/pac-man'
     secrets:
       repo_token: ${{ secrets.CROSS_REPO_TOKEN }}

@@ -1,0 +1,55 @@
+{
+  "name": "@parkerstovall.com/app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 3000",
+    "start": "vite --port 3000",
+    "build": "vite build && tsc",
+    "serve": "vite preview",
+    "test": "echo vitest run",
+    "lint": "eslint ./src --fix",
+    "copy:404": "cpy 'dist/index.html' '.' --rename=404.html",
+    "deploy": "npm run build && npm run copy:404"
+  },
+  "dependencies": {
+    "@parkerstovall.com/mustachio": "workspace:*",
+    "@parkerstovall.com/pac-man": "workspace:*",
+    "@tanstack/react-router": "^1.170.12",
+    "@tanstack/react-router-devtools": "^1.167.0",
+    "@tanstack/router-plugin": "^1.168.15",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "terser": "^5.48.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@eslint/markdown": "^8.0.2",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "cpy-cli": "^7.0.0",
+    "eslint": "^10.4.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.6",
+    "eslint-plugin-unused-imports": "^4.4.1",
+    "globals": "^17.6.0",
+    "jsdom": "^29.1.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.60.1",
+    "vite": "^8.0.16",
+    "vite-plugin-dts": "^5.0.2",
+    "vitest": "^4.1.8",
+    "web-vitals": "^5.3.0"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "semi": false,
+    "printWidth": 80
+  },
+  "version": "0.0.14"
+}
