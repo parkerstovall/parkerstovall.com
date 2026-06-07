@@ -7,9 +7,7 @@
   "scripts": {
     "build": "turbo build",
     "lint": "turbo lint",
-    "dev": "turbo dev --filter @parkerstovall.com/app",
-    "deploy": "turbo build && pnpm --filter app copy:404",
-    "test": "turbo test"
+    "deploy": "turbo build && pnpm --filter @parkerstovall.com/app copy:404",
   },
   "keywords": [],
   "author": "",
