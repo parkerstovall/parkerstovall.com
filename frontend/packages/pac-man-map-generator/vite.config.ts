@@ -2,17 +2,23 @@ import { defineConfig } from 'vite'
 import dts from 'vite-plugin-dts'
 
 export default defineConfig({
-  plugins: [dts({
-    bundleTypes: true,
-  })],
+  plugins: [
+    dts({
+      bundleTypes: true,
+    }),
+  ],
+  test: {
+    globals: true,
+    environment: 'node',
+  },
   build: {
     lib: {
       entry: 'src/index.ts',
       formats: ['es'],
-      fileName: 'index' 
+      fileName: 'index',
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'phaser']
-    }
-  }
+      external: ['react', 'react-dom', 'phaser'],
+    },
+  },
 })

@@ -3,6 +3,11 @@
     "**/*.ts",
     "**/*.tsx"
   ],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/node_modules"
+  ],
   "compilerOptions": {
     "target": "ES2022",
     "jsx": "react-jsx",

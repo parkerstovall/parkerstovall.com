@@ -11,6 +11,7 @@
   "scripts": {
     "build": "vite build",
     "lint": "eslint ./src --fix",
+    "test": "vitest run",
     "patch": "npm version patch --no-git-tag-version",
     "minor": "npm version minor --no-git-tag-version",
     "major": "npm version major --no-git-tag-version",
@@ -27,7 +28,8 @@
     "eslint-config-prettier": "^10.1.8",
     "typescript": "~6.0.3",
     "vite": "^8.0.16",
-    "vite-plugin-dts": "^5.0.2"
+    "vite-plugin-dts": "^5.0.2",
+    "vitest": "^4.1.8"
   },
   "keywords": [
     "pacman",

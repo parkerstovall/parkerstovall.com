@@ -11,6 +11,7 @@
   "scripts": {
     "lint": "eslint ./src --fix",
     "build": "vite build",
+    "test": "vitest run",
     "preview": "vite preview",
     "patch": "npm version patch --no-git-tag-version",
     "prepublishOnly": "npm run build"
@@ -27,7 +28,9 @@
     "prettier": "^3.8.3",
     "typescript": "~6.0.3",
     "vite": "^8.0.16",
-    "vite-plugin-dts": "^5.0.2"
+    "vite-plugin-dts": "^5.0.2",
+    "vitest": "^4.1.8",
+    "jsdom": "^29.1.1"
   },
   "dependencies": {
     "phaser": "^4.1.0"

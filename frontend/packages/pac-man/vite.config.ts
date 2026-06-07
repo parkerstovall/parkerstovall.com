@@ -3,17 +3,30 @@ import react from '@vitejs/plugin-react'
 import dts from 'vite-plugin-dts'
 
 export default defineConfig({
-  plugins: [dts({
-    bundleTypes: true,
-  }), react()],
+  plugins: [
+    dts({
+      bundleTypes: true,
+    }),
+    react(),
+  ],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+  },
   build: {
     lib: {
       entry: 'src/index.ts',
       formats: ['es'],
-      fileName: 'index' 
+      fileName: 'index',
     },
     rollupOptions: {
-      external: ['react', 'react/jsx-runtime', 'react/jsx-dev-runtime', 'react-dom', 'phaser']
-    }
-  }
+      external: [
+        'react',
+        'react/jsx-runtime',
+        'react/jsx-dev-runtime',
+        'react-dom',
+        'phaser',
+      ],
+    },
+  },
 })

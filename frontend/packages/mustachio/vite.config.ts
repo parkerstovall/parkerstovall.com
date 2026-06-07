@@ -9,6 +9,10 @@ export default defineConfig({
     }),
     react(),
   ],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+  },
   build: {
     outDir: 'dist',
     lib: {
