@@ -24,9 +24,10 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
     "typescript": "~6.0.3",
+    "vite": "^8.0.16",
     "vite-plugin-dts": "^5.0.2",
     "vitest": "^4.1.8",
     "jsdom": "^29.1.1",
@@ -53,10 +54,11 @@
     "printWidth": 80
   },
   "dependencies": {
-    "@parkerstovall.com/pac-man-map-generator": "workspace:*",
+    "@parkerstovall.com/pac-man-map-generator": "workspace:*"
+  },
+  "peerDependencies": {
     "phaser": "^4.1.0",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7",
-    "vite": "^8.0.16"
+    "react-dom": "^19.2.7"
   }
 }
