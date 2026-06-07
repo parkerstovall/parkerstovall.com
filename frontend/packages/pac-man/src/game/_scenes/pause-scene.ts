@@ -28,7 +28,7 @@ export class PauseMenu extends Phaser.Scene {
       this.scene.resume('PacManScene') // resume game
     }
 
-    resumeButton.on('pointerdown', resume)
-    this.input.keyboard?.on('keydown-P', resume)
+    resumeButton.once('pointerdown', resume)
+    this.input.keyboard?.once('keydown-P', resume)
   }
 }
