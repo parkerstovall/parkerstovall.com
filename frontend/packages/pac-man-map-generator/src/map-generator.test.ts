@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { generateMap } from './map-generator'
 
 function getPacManStart(width: number, height: number) {

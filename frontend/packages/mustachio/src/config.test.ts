@@ -1,3 +1,5 @@
+import { vi, describe, it, expect } from 'vitest'
+
 vi.mock('phaser', () => ({
   default: {
     AUTO: 'AUTO',

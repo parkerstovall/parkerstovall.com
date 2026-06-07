@@ -1,3 +1,5 @@
+import { vi, describe, it, expect, afterEach } from 'vitest'
+
 vi.mock('./config', () => ({
   createGameConfig: vi.fn(() => ({
     type: 'AUTO',
@@ -5,14 +7,16 @@ vi.mock('./config', () => ({
 }))
 
 vi.mock('./MobileControls', () => ({
-  MobileControls: vi.fn(function () {
+  MobileControls: vi.fn(function (this: { destroy: ReturnType<typeof vi.fn> }) {
     this.destroy = vi.fn()
   }),
 }))
 
 vi.mock('phaser', () => ({
   default: {
-    Game: vi.fn(function (config) {
+    Game: vi.fn(function (this: {
+      registry: { set: ReturnType<typeof vi.fn> }
+    }) {
       this.registry = {
         set: vi.fn(),
       }

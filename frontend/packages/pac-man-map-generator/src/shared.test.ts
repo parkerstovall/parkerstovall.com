@@ -1,3 +1,4 @@
+import { describe, it, expect, vi, afterEach } from 'vitest'
 import { getRandomDirection, getRandomInt } from './shared'
 
 describe('shared utilities', () => {

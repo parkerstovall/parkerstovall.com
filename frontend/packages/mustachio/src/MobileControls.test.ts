@@ -1,3 +1,4 @@
+import { describe, it, expect, afterEach } from 'vitest'
 import { MobileControls } from './MobileControls'
 
 describe('MobileControls', () => {

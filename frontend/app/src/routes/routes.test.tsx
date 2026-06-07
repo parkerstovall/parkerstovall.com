@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { vi, describe, it, expect, afterEach } from 'vitest'
+import { render, screen, waitFor } from '@testing-library/react'
 import {
   RouterProvider,
   createMemoryHistory,
@@ -50,6 +51,8 @@ describe('app routes', () => {
     renderAt('/games/mustachio')
 
     expect(await screen.findByText('Mustachio')).toBeTruthy()
-    expect(startMustachio).toHaveBeenCalledWith('game-container')
+    await waitFor(() => {
+      expect(startMustachio).toHaveBeenCalledWith('game-container')
+    })
   })
 })

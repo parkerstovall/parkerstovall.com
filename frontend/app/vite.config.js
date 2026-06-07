@@ -21,7 +21,7 @@ export default defineConfig({
     include: ['phaser'],
   },
   test: {
-    globals: true,
+
     environment: 'jsdom',
   },
   build: {

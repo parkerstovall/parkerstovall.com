@@ -1,16 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { startMustachio } from '@parkerstovall.com/mustachio'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 export const Route = createFileRoute('/games/mustachio')({
   component: MustachioGame,
 })
 
-let gameStarted = false
 function MustachioGame() {
+  const hasStarted = useRef(false)
   useEffect(() => {
-    if (gameStarted) return
-    gameStarted = true
+    if (hasStarted.current) return
+    hasStarted.current = true
     startMustachio('game-container')
   }, [])
 

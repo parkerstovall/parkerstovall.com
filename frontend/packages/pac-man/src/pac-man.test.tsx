@@ -1,3 +1,4 @@
+import { vi, describe, it, expect, afterEach } from 'vitest'
 import { render } from '@testing-library/react'
 
 vi.mock('phaser', () => ({
@@ -24,7 +25,11 @@ describe('PacMan', () => {
     expect(createPacManScene).toHaveBeenCalledTimes(1)
 
     const scene = (
-      createPacManScene as unknown as { mock: { results: Array<{ value: { destroy: ReturnType<typeof vi.fn> } }> } }
+      createPacManScene as unknown as {
+        mock: {
+          results: Array<{ value: { destroy: ReturnType<typeof vi.fn> } }>
+        }
+      }
     ).mock.results[0].value
 
     unmount()
