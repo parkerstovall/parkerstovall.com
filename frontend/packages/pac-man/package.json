@@ -1,0 +1,64 @@
+{
+  "name": "@parkerstovall.com/pac-man",
+  "type": "module",
+  "version": "1.0.11",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "vite build",
+    "lint": "eslint ./src --fix",
+    "test": "vitest run",
+    "patch": "npm version patch --no-git-tag-version"
+  },
+  "devDependencies": {
+    "@eslint/markdown": "^8.0.2",
+    "@microsoft/api-extractor": "^7.58.7",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "eslint": "^10.4.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "typescript": "~6.0.3",
+    "vite": "^8.0.16",
+    "vite-plugin-dts": "^5.0.2",
+    "vitest": "^4.1.8",
+    "jsdom": "^29.1.1",
+    "@testing-library/react": "^16.3.2"
+  },
+  "keywords": [
+    "pacman",
+    "map",
+    "generator",
+    "game"
+  ],
+  "author": "parkerstovall",
+  "license": "MIT",
+  "description": "Game of Pac-Man built using Phaser JS",
+  "bugs": {
+    "url": "https://github.com/parkerstovall/pac-man/issues"
+  },
+  "homepage": "https://github.com/parkerstovall/pac-man",
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "all",
+    "tabWidth": 2,
+    "semi": false,
+    "printWidth": 80
+  },
+  "dependencies": {
+    "@parkerstovall.com/pac-man-map-generator": "workspace:*"
+  },
+  "peerDependencies": {
+    "phaser": "^4.1.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7"
+  }
+}

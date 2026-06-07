@@ -1,0 +1,56 @@
+name: Pull Request (Frontend)
+
+on: 
+  pull_request:
+    paths:
+      - 'frontend/**'
+
+permissions:
+  contents: write
+
+jobs:
+  Verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6     
+        with:
+          fetch-depth: 0  
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          cache: 'pnpm'
+          cache-dependency-path: './frontend/pnpm-lock.yaml'
+
+      - name: Cache Turbo
+        uses: actions/cache@v5
+        with:
+          path: ./frontend/.turbo
+          key: ${{ runner.os }}-turbo-${{ hashFiles('frontend/pnpm-lock.yaml', 'frontend/turbo.json', 'frontend/**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install Dependencies
+        run: pnpm install
+
+      - name: Build
+        run: pnpm build
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Commit changes if any
+        uses: EndBug/add-and-commit@v10
