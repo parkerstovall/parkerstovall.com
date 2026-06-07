@@ -21,13 +21,8 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
   },
-  resolve: {
-    alias: {
-      // eslint-disable-next-line no-undef
-      '@': resolve(__dirname, './src'),
-    },
-  },
   build: {
+    outDir: 'dist',
     chunkSizeWarningLimit: 1500, // Phaser is a large dependency
     rollupOptions: {
       output: {
