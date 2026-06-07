@@ -32,6 +32,14 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: './frontend/pnpm-lock.yaml'
 
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: ./frontend/.turbo
+          key: ${{ runner.os }}-turbo-${{ hashFiles('frontend/pnpm-lock.yaml', 'frontend/turbo.json', 'frontend/**/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
       - name: Install Dependencies
         run: pnpm install
 
