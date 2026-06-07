@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "build": "pnpm -r run build",
+    "lint": "pnpm -r run lint",
     "dev": "pnpm --filter app run dev",
     "deploy": "pnpm build && pnpm --filter app copy:404",
     "test": "echo \"Error: no test specified\" && exit 0"
