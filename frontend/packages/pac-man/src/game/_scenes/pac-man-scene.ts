@@ -34,18 +34,29 @@ export class PacManScene extends Scene {
     this.physics.world.colliders.destroy()
 
     // Pause functionality
-    this.input.keyboard?.on('keydown-P', () => {
+    const self = this as this & {
+      _onPauseKeyDown?: () => void
+      _onGameOver?: () => void
+    }
+
+    self._onPauseKeyDown ??= () => {
       this.scene.pause()
       this.scene.launch('PauseMenu')
-    })
+    }
 
-    this.events.on('game-over', () => {
+    self._onGameOver ??= () => {
       this.gameOver = true
       this.physics.pause()
       this.scene.launch('GameOverScene', {
         score: this.scoreDisplay.getScore(),
       })
-    })
+    }
+
+    this.input.keyboard?.off('keydown-P', self._onPauseKeyDown)
+    this.input.keyboard?.on('keydown-P', self._onPauseKeyDown)
+
+    this.events.off('game-over', self._onGameOver)
+    this.events.on('game-over', self._onGameOver)
 
     this.createGraphics()
     const map = generateMap()
