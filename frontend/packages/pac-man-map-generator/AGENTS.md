@@ -16,7 +16,7 @@
   - `pnpm --filter @parkerstovall.com/pac-man-map-generator patch`
   - `pnpm --filter @parkerstovall.com/pac-man-map-generator minor`
   - `pnpm --filter @parkerstovall.com/pac-man-map-generator major`
-- No test script is currently defined.
+- Run tests with: `pnpm --filter @parkerstovall.com/pac-man-map-generator test`.
 
 ## Project Conventions
 - Keep deterministic option handling and validation paths intact in `src/options.ts`.
