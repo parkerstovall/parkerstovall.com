@@ -14,7 +14,7 @@
   - `pnpm --filter @parkerstovall.com/pac-man build`
   - `pnpm --filter @parkerstovall.com/pac-man lint`
   - `pnpm --filter @parkerstovall.com/pac-man patch`
-- No test or dev scripts are currently defined.
+- Run tests with: `pnpm --filter @parkerstovall.com/pac-man test` (no dev script is currently defined).
 
 ## Project Conventions
 - Keep Vite library build outputs and type generation behavior from `vite.config.ts`.
