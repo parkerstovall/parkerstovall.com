@@ -1,151 +1,138 @@
-.App {
-  text-align: center;
+.home-hero {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 1rem;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.home-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  gap: 1.5rem;
+  grid-column: 1 / -1;
+  margin-top: 1.5rem;
 }
 
-.App-link {
-  color: #61dafb;
+.home-hero-card, .home-content-card {
+  padding: clamp(1rem, 2.2vw, 1.8rem);
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.home-title {
+  margin: 0.7rem 0 0.7rem;
+  line-height: 1.08;
+  font-family: 'Space Grotesk', 'Avenir Next', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.7rem);
+  letter-spacing: -0.02em;
 }
 
-body {
-  background-color: darkgray;
-}
-
-input {
-  margin: 8px;
-}
-
-#ui-layer {
-  z-index: 3;
-}
-#game-layer {
-  z-index: 2;
-}
-#background-layer {
-  z-index: 1;
-}
-
-html, body {
-  height: 100%;
-  width: 100%;
+.home-subtitle {
   margin: 0;
-  padding: 0;
+  color: var(--text-soft);
+  line-height: 1.6;
+  max-width: 52ch;
 }
 
-.gameCanvas {
-  border: 1px solid #cccccc;
-  padding: 0;
-  margin: 100px auto;
+.home-kpis {
+  margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.home-kpi {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: #ffffff;
+}
+
+.home-kpi strong {
   display: block;
-  position: absolute;
-  width: 64vw;
-  top: 50vh;
-  left: 50vw;
-  height: 36vw;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-select: none;
+  font-size: 1.05rem;
+  font-family: 'Space Grotesk', 'Avenir Next', sans-serif;
 }
 
-hr {
-  flex: 100%;
-  visibility: hidden;
+.home-kpi span {
+  font-size: 0.8rem;
+  color: var(--text-soft);
 }
 
-.flexHead {
-  flex: 100%;
-  margin: 5px;
-  font-weight: bold;
+.home-game-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.85rem;
 }
 
-.settingsHead {
-  font-size: 1.5em;
-  font-weight: bold;
+.home-game-card {
+  padding: 0.9rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-strong);
+  text-decoration: none;
+  transition: border-color 160ms ease, background-color 160ms ease;
 }
 
-#settings {
-  display: flex;
-  justify-content: center;
+.home-game-card:hover {
+  border-color: #cbd5e1;
+  background: #fcfcfd;
+}
+
+.home-game-card h3 {
+  margin: 0 0 0.3rem;
+  font-size: 1rem;
+}
+
+.home-game-card p {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.45;
+  font-size: 0.9rem;
+}
+
+.home-pill {
+  margin-top: 0.95rem;
+  display: inline-flex;
   align-items: center;
-  flex-wrap: wrap;
-  flex-direction: row;
-  text-align: center;
-  position: absolute;
-  top: 20vh;
-  left: 85vw;
-  margin: 20px;
-  padding: 0;
-  background: lightgray;
-  border: 2px solid darkgray;
-  border-radius: 50px;
+  gap: 0.5rem;
+  background: #ecfeff;
+  color: #0f766e;
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid #ccfbf1;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  font-weight: 600;
 }
 
-header > h1 {
-  text-align: Left;
-  font-size: 100px;
-  color: black;
+.section-title {
+  font-family: 'Space Grotesk', 'Avenir Next', sans-serif;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  margin: 0 0 0.75rem;
 }
 
-.mobile-controls {
-  z-index: 4;
-  top: 75vh;
-  border: none;
+.section-text {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.6;
 }
 
-.mobile-controls .right {
-  left: 14vw;
+.section-text + .section-text {
+  margin-top: 1rem;
 }
 
-.mobile-controls .jump {
-  right: 14vw;
+@media (max-width: 880px) {
+  .home-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .home-kpis {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-.mobile-controls .fire {
-  right: 3vw;
-}
-
-.mobile-controls .left {
-  left: 3vw;
-}
-
-.mobile-controls button {
-  position: absolute;
-  height: 8vw;
-  width: 8vw;
-  opacity: .4;
-  background-color: #333;
-  bottom: 20px;
-  border-radius: 50%;
-  pointer-events: all;
+@media (max-width: 520px) {
+  .home-kpis,
+  .home-game-grid {
+    grid-template-columns: 1fr;
+  }
 }

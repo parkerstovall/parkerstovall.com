@@ -1,14 +1,240 @@
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap');
+
+:root {
+  --bg-0: #f7f9fc;
+  --bg-1: #f7f9fc;
+  --surface: #ffffff;
+  --surface-strong: #ffffff;
+  --text: #1f2937;
+  --text-soft: #6b7280;
+  --line: #e5e7eb;
+  --brand: #0f766e;
+  --brand-strong: #115e59;
+  --accent: #0f766e;
+  --shadow: 0 6px 18px rgba(17, 24, 39, 0.05);
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--text);
+  font-family: 'Manrope', 'Avenir Next', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 100%);
+}
+
+a {
+  color: inherit;
+}
+
+.site-shell {
+  min-height: 100vh;
+}
+
+.site-nav-wrap {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  border-bottom: 1px solid var(--line);
+  background: rgba(247, 249, 252, 0.92);
+  backdrop-filter: blur(4px);
+}
+
+.site-nav {
+  width: min(1120px, calc(100% - 2.5rem));
+  margin: 0 auto;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.site-nav-link {
+  text-decoration: none;
+  color: var(--text-soft);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.28rem 0.5rem;
+  border-radius: 8px;
+}
+
+.site-nav-link:hover {
+  color: var(--text);
+  background: #ffffff;
+}
+
+.site-page {
+  width: min(1120px, calc(100% - 2.5rem));
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--brand-strong);
+  font-weight: 700;
+}
+
+.eyebrow::before {
+  content: '';
+  width: 1.4rem;
+  height: 2px;
+  background: var(--accent);
+}
+
+.surface-card {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.section-title {
+  font-family: 'Space Grotesk', 'Avenir Next', sans-serif;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  margin: 0 0 0.75rem;
+}
+
+.section-text {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
+
+.inline-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  color: var(--brand-strong);
+  font-weight: 700;
+}
+
+.inline-link:hover {
+  color: var(--brand);
+}
+
+@media (max-width: 768px) {
+  .site-nav {
+    width: min(1120px, calc(100% - 1.25rem));
+  }
+
+  .site-page {
+    width: min(1120px, calc(100% - 1.25rem));
+    padding: 1.25rem 0 2.5rem;
+  }
+}
+
+input {
+  margin: 8px;
+}
+
+#ui-layer {
+  z-index: 3;
+}
+
+#game-layer {
+  z-index: 2;
+}
+
+#background-layer {
+  z-index: 1;
+}
+
+.gameCanvas {
+  border: 1px solid #cccccc;
+  padding: 0;
+  margin: 100px auto;
+  display: block;
+  position: absolute;
+  width: 64vw;
+  top: 50vh;
+  left: 50vw;
+  height: 36vw;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+hr {
+  flex: 100%;
+  visibility: hidden;
+}
+
+.flexHead {
+  flex: 100%;
+  margin: 5px;
+  font-weight: bold;
+}
+
+.settingsHead {
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+#settings {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+  text-align: center;
+  position: absolute;
+  top: 20vh;
+  left: 85vw;
+  margin: 20px;
+  padding: 0;
+  background: lightgray;
+  border: 2px solid darkgray;
+  border-radius: 50px;
+}
+
+.mobile-controls {
+  z-index: 4;
+  top: 75vh;
+  border: none;
+}
+
+.mobile-controls .right {
+  left: 14vw;
+}
+
+.mobile-controls .jump {
+  right: 14vw;
+}
+
+.mobile-controls .fire {
+  right: 3vw;
+}
+
+.mobile-controls .left {
+  left: 3vw;
+}
+
+.mobile-controls button {
+  position: absolute;
+  height: 8vw;
+  width: 8vw;
+  opacity: 0.4;
+  background-color: #333;
+  bottom: 20px;
+  border-radius: 50%;
+  pointer-events: all;
 }

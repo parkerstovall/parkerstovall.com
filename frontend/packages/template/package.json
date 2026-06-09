@@ -1,6 +1,6 @@
 {
-  "name": "@parkerstovall.com/mustachio",
-  "version": "1.1.2",
+  "name": "@parkerstovall.com/template",
+  "version": "1.0.0",
   "type": "module",
   "exports": {
     ".": {
@@ -12,36 +12,26 @@
     "dev": "vite",
     "lint": "eslint ./src --fix",
     "build": "vite build",
-    "test": "vitest run",
-    "preview": "vite preview",
+    "test": "echo \"Make sure to write some tests!\"",
     "patch": "npm version patch --no-git-tag-version",
+    "minor": "npm version minor --no-git-tag-version",
+    "major": "npm version major --no-git-tag-version",
     "prepublishOnly": "npm run build"
   },
   "devDependencies": {
     "@eslint/markdown": "^8.0.2",
-    "@microsoft/api-extractor": "^7.58.7",
     "@typescript-eslint/eslint-plugin": "^8.60.1",
     "@typescript-eslint/parser": "^8.60.1",
-    "@vitejs/plugin-react": "^6.0.2",
     "eslint": "^10.4.1",
-    "eslint-config-prettier": "^10.1.8",
-    "jiti": "^2.7.0",
+    "eslint-config-prettier": "^10.1.5",
     "prettier": "^3.8.3",
     "typescript": "~6.0.3",
     "vite": "^8.0.16",
     "vite-plugin-dts": "^5.0.2",
-    "vitest": "^4.1.8",
-    "jsdom": "^29.1.1",
-    "phaser": "^4.1.0"
-  },
-  "peerDependencies": {
-    "phaser": "^4.1.0"
+    "vitest": "^4.1.8"
   },
   "prettier": {
     "singleQuote": true,
-    "trailingComma": "all",
-    "tabWidth": 2,
-    "semi": false,
-    "printWidth": 80
+    "semi": false
   }
 }

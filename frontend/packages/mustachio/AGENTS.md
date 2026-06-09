@@ -11,11 +11,15 @@
 
 ## Build and Test
 - From `frontend/`:
+  - `pnpm --filter @parkerstovall.com/mustachio dev`
   - `pnpm --filter @parkerstovall.com/mustachio build`
   - `pnpm --filter @parkerstovall.com/mustachio lint`
   - `pnpm --filter @parkerstovall.com/mustachio preview`
   - `pnpm --filter @parkerstovall.com/mustachio patch`
 - No test script is currently defined.
+
+## Local Dev
+- `index.html` loads `src/dev.ts`, which mounts the game into `#app` for manual browser testing.
 
 ## Project Conventions
 - Build is library mode via Vite (`vite.config.ts`) and emits `dist/index.js` + types.

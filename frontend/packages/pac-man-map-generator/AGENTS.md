@@ -11,12 +11,16 @@
 
 ## Build and Test
 - From `frontend/`:
+  - `pnpm --filter @parkerstovall.com/pac-man-map-generator dev`
   - `pnpm --filter @parkerstovall.com/pac-man-map-generator build`
   - `pnpm --filter @parkerstovall.com/pac-man-map-generator lint`
   - `pnpm --filter @parkerstovall.com/pac-man-map-generator patch`
   - `pnpm --filter @parkerstovall.com/pac-man-map-generator minor`
   - `pnpm --filter @parkerstovall.com/pac-man-map-generator major`
 - Run tests with: `pnpm --filter @parkerstovall.com/pac-man-map-generator test`.
+
+## Local Dev
+- `index.html` loads `src/dev.ts`, which can generate and display sample map output in the browser.
 
 ## Project Conventions
 - Keep deterministic option handling and validation paths intact in `src/options.ts`.

@@ -11,10 +11,14 @@
 
 ## Build and Test
 - From `frontend/`:
+  - `pnpm --filter @parkerstovall.com/pac-man dev`
   - `pnpm --filter @parkerstovall.com/pac-man build`
   - `pnpm --filter @parkerstovall.com/pac-man lint`
   - `pnpm --filter @parkerstovall.com/pac-man patch`
-- Run tests with: `pnpm --filter @parkerstovall.com/pac-man test` (no dev script is currently defined).
+- Run tests with: `pnpm --filter @parkerstovall.com/pac-man test`.
+
+## Local Dev
+- `index.html` loads `src/dev.tsx`, which renders the `PacMan` component into `#app` for manual browser testing.
 
 ## Project Conventions
 - Keep Vite library build outputs and type generation behavior from `vite.config.ts`.
