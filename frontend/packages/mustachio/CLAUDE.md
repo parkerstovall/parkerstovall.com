@@ -8,7 +8,7 @@ Mustachio is a Mario-inspired browser platformer game engine published as an npm
 
 ## Commands
 
-- `npm run dev` — Start Vite dev server
+- `npm run dev` — Start Vite dev server and load `index.html`
 - `npm run build` — TypeScript check + Vite build (outputs to `dist/`)
 - `npm run lint` — ESLint with auto-fix
 - `npm run preview` — Preview the built package

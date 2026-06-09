@@ -10,18 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as GamesIndexRouteImport } from './routes/games/index'
 import { Route as GamesPacManRouteImport } from './routes/games/pac-man'
 import { Route as GamesMustachioRouteImport } from './routes/games/mustachio'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GamesIndexRoute = GamesIndexRouteImport.update({
-  id: '/games/',
-  path: '/games/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GamesPacManRoute = GamesPacManRouteImport.update({
@@ -39,34 +33,30 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/games/mustachio': typeof GamesMustachioRoute
   '/games/pac-man': typeof GamesPacManRoute
-  '/games/': typeof GamesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/games/mustachio': typeof GamesMustachioRoute
   '/games/pac-man': typeof GamesPacManRoute
-  '/games': typeof GamesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/games/mustachio': typeof GamesMustachioRoute
   '/games/pac-man': typeof GamesPacManRoute
-  '/games/': typeof GamesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/games/mustachio' | '/games/pac-man' | '/games/'
+  fullPaths: '/' | '/games/mustachio' | '/games/pac-man'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/games/mustachio' | '/games/pac-man' | '/games'
-  id: '__root__' | '/' | '/games/mustachio' | '/games/pac-man' | '/games/'
+  to: '/' | '/games/mustachio' | '/games/pac-man'
+  id: '__root__' | '/' | '/games/mustachio' | '/games/pac-man'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   GamesMustachioRoute: typeof GamesMustachioRoute
   GamesPacManRoute: typeof GamesPacManRoute
-  GamesIndexRoute: typeof GamesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -76,13 +66,6 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/games/': {
-      id: '/games/'
-      path: '/games'
-      fullPath: '/games/'
-      preLoaderRoute: typeof GamesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/pac-man': {
@@ -106,7 +89,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   GamesMustachioRoute: GamesMustachioRoute,
   GamesPacManRoute: GamesPacManRoute,
-  GamesIndexRoute: GamesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
