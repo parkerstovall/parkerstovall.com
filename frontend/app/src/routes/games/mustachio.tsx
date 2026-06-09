@@ -16,7 +16,10 @@ function MustachioGame() {
 
   return (
     <main className="site-page">
-      <section className="surface-card" style={{ padding: '1.2rem 1.2rem 1.5rem' }}>
+      <section
+        className="surface-card"
+        style={{ padding: '1.2rem 1.2rem 1.5rem' }}
+      >
         <Link className="inline-link" to="/">
           Back to home
         </Link>

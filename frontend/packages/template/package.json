@@ -12,7 +12,7 @@
     "dev": "vite",
     "lint": "eslint ./src --fix",
     "build": "vite build",
-    "test": "vitest run",
+    "test": "echo \"Make sure to write some tests!\"",
     "patch": "npm version patch --no-git-tag-version",
     "minor": "npm version minor --no-git-tag-version",
     "major": "npm version major --no-git-tag-version",

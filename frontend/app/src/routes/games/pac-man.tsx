@@ -8,14 +8,19 @@ export const Route = createFileRoute('/games/pac-man')({
 function PacManGame() {
   return (
     <main className="site-page">
-      <section className="surface-card" style={{ padding: '1.2rem 1.2rem 1rem' }}>
+      <section
+        className="surface-card"
+        style={{ padding: '1.2rem 1.2rem 1rem' }}
+      >
         <Link className="inline-link" to="/">
           Back to home
         </Link>
         <h1 className="section-title" style={{ marginTop: '0.75rem' }}>
           Pac-Man
         </h1>
-        <p className="section-text">Classic maze gameplay, playable in-browser.</p>
+        <p className="section-text">
+          Classic maze gameplay, playable in-browser.
+        </p>
       </section>
       <section
         className="surface-card"

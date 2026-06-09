@@ -5,7 +5,7 @@ const output = document.getElementById('output')!
 function render() {
   const map = generateMap({
     map: {
-      bounds: { width: 28, height: 28 },
+      bounds: { width: 28, height: 29 },
       teleporter: { min: 1, max: 2 },
     },
     mapMaker: {
@@ -15,7 +15,21 @@ function render() {
     debug: true,
   })
 
-  output.textContent = JSON.stringify(map, null, 2)
+  const html = map
+    .map((row) =>
+      row
+        .map((cell) => {
+          if (cell?.type === 'wall') return '⬛'
+          if (cell?.type === 'teleporter') return '🌀'
+          if (cell?.type === 'empty') return '⬜'
+          if (cell?.type === 'ghost-house') return '👻'
+          return '⬛'
+        })
+        .join(''),
+    )
+    .join('\n')
+
+  output.innerHTML = html
 }
 
 document.getElementById('generate')?.addEventListener('click', render)
