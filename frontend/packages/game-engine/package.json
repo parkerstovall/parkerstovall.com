@@ -1,0 +1,37 @@
+{
+  "name": "@parkerstovall.com/template",
+  "version": "1.0.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "lint": "eslint ./src --fix",
+    "build": "vite build",
+    "test": "echo \"Make sure to write some tests!\"",
+    "patch": "npm version patch --no-git-tag-version",
+    "minor": "npm version minor --no-git-tag-version",
+    "major": "npm version major --no-git-tag-version",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@eslint/markdown": "^8.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.60.1",
+    "@typescript-eslint/parser": "^8.60.1",
+    "eslint": "^10.4.1",
+    "eslint-config-prettier": "^10.1.5",
+    "prettier": "^3.8.3",
+    "typescript": "~6.0.3",
+    "vite": "^8.0.16",
+    "vite-plugin-dts": "^5.0.2",
+    "vitest": "^4.1.8"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "semi": false
+  }
+}
