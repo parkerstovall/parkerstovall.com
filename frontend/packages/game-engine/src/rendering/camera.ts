@@ -1,10 +1,10 @@
 import type { Engine } from '../engine'
-import { GameObject, type Position } from '../interfaces'
+import { GameObject, type Transform } from '../interfaces'
 
 export abstract class Camera extends GameObject {
   protected readonly parent: HTMLElement
 
-  constructor(engine: Engine, position: Position, parentId: string) {
+  constructor(engine: Engine, position: Transform, parentId: string) {
     super(engine, position)
 
     const maybeParent = document.getElementById(parentId)

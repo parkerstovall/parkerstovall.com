@@ -1,5 +1,5 @@
 import type { Engine } from '../engine'
-import type { GameObject, Position } from '../interfaces'
+import type { GameObject, Transform } from '../interfaces'
 import { Camera } from './camera'
 
 export class TwoDimensionalCamera extends Camera {
@@ -13,12 +13,17 @@ export class TwoDimensionalCamera extends Camera {
   private readonly gameLayerTag = 'game-layer'
   private readonly uiLayerTag = 'ui-layer'
 
+  private readonly anchor?: GameObject
+  private offsetX: number = 0
+  private offsetY: number = 0
+
   constructor(
     engine: Engine,
-    position: Position,
+    position: Transform,
     width: number,
     height: number,
     parentId: string,
+    anchor?: GameObject,
   ) {
     super(engine, position, parentId)
 
@@ -27,6 +32,12 @@ export class TwoDimensionalCamera extends Camera {
     this.parent.style.width = width + 'px'
     this.parent.style.height = height + 'px'
     this.parent.style.position = 'relative'
+    this.anchor = anchor
+    console.log(this.anchor)
+    if (this.anchor) {
+      this.offsetX = this.anchor.transform.x - this.transform.x
+      this.offsetY = this.anchor.transform.y - this.transform.y
+    }
 
     this.backgroundLayer = this.createCanvas('background-layer')
     this.backgroundLayer.style.zIndex = '-1'
@@ -51,14 +62,24 @@ export class TwoDimensionalCamera extends Camera {
     return canvas
   }
 
+  lateUpdate(): void {
+    if (this.anchor) {
+      this.offsetX = this.anchor.transform.x - this.transform.x
+      this.offsetY = this.anchor.transform.y - this.transform.y
+      console.log(this.offsetX, this.offsetY)
+    }
+  }
+
   paint(gameObjects: GameObject[]) {
     const objectsToPaint = gameObjects.filter((g) => this.shouldPaint(g))
     const bgCtx = this.backgroundLayer.getContext('2d')!
     const gameCtx = this.gameLayer.getContext('2d')!
     const uiCtx = this.uiLayer.getContext('2d')!
+    bgCtx.clearRect(0, 0, this.width, this.height)
+    gameCtx.clearRect(0, 0, this.width, this.height)
+    uiCtx.clearRect(0, 0, this.width, this.height)
 
     for (const object of objectsToPaint) {
-      console.log('Drawing object')
       let ctx: CanvasRenderingContext2D
       if (object.tags.includes(this.backgroundLayerTag)) {
         ctx = bgCtx
@@ -69,23 +90,25 @@ export class TwoDimensionalCamera extends Camera {
       }
 
       const texture = object.texture!
-      const { x, y } = object.position
+      const { x, y, width, height } = object.transform
+      const drawX = x - this.offsetX
+      const drawY = y - this.offsetY
 
       switch (texture.type) {
         case 'rectangle':
           ctx.fillStyle = texture.color
-          ctx.fillRect(x, y, texture.width, texture.height)
+          ctx.fillRect(drawX, drawY, width, height)
           break
         case 'circle':
-          const centerX = x + texture.width / 2
-          const centerY = y + texture.height / 2
+          const centerX = drawX + width / 2
+          const centerY = drawY + height / 2
           ctx.fillStyle = texture.color
           ctx.beginPath()
-          ctx.arc(centerX, centerY, texture.width / 2, 0, 2 * Math.PI)
+          ctx.arc(centerX, centerY, width / 2, 0, 2 * Math.PI)
           ctx.fill()
           break
         case 'image':
-          ctx.drawImage(texture.image, x, y, texture.width, texture.height)
+          ctx.drawImage(texture.image, drawX, drawY, width, height)
       }
     }
   }
@@ -105,20 +128,20 @@ export class TwoDimensionalCamera extends Camera {
       return false
     }
 
-    const { x, y } = gameObject.position
-    if (x > this.width) {
+    const { x, y, height, width } = gameObject.transform
+    if (x - this.offsetX > this.width) {
       return false
     }
 
-    if (y > this.height) {
+    if (y - this.offsetY > this.height) {
       return false
     }
 
-    if (x + gameObject.texture.width < 0) {
+    if (x + width - this.offsetX < 0) {
       return false
     }
 
-    if (y + gameObject.texture.height < 0) {
+    if (y + height - this.offsetY < 0) {
       return false
     }
 

@@ -1,23 +1,14 @@
 import type { Engine } from './engine'
 
-export type Position = {
+export type Transform = {
   x: number
   y: number
-}
-
-export type Collider = {
-  type: string
-}
-
-export type RectangleCollider = Collider & {
-  type: 'rect'
   width: number
   height: number
 }
 
-export type CircleCollider = Collider & {
-  type: 'circle'
-  radius: number
+export type Collider = {
+  type: 'box' | 'circle'
 }
 
 export interface Scene {
@@ -43,13 +34,10 @@ export type Image = {
   image: CanvasImageSource
 }
 
-export type Texture = (Image | Sprite) & {
-  width: number
-  height: number
-}
+export type Texture = Image | Sprite
 
 export abstract class GameObject {
-  public position: Position
+  public transform: Transform
   public collider?: Collider
   public texture?: Texture
   public isActive: boolean = true
@@ -58,10 +46,10 @@ export abstract class GameObject {
 
   protected readonly engine: Engine
 
-  constructor(engine: Engine, position: Position) {
-    this.position = position
+  constructor(engine: Engine, position: Transform) {
+    this.transform = position
     this.engine = engine
-    this.objectId = Math.random().toString(36).substring(2)
+    this.objectId = crypto.randomUUID()
   }
 
   start?(): void
