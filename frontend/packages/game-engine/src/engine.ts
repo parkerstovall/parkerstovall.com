@@ -1,4 +1,5 @@
 import type { Chunk, GameObject, Scene } from './interfaces'
+import { CollisionManager } from './managers/collision-manager'
 import { KeystrokeManager } from './managers/keystroke-manager'
 import type { Camera } from './rendering/camera'
 
@@ -7,7 +8,8 @@ export class Engine {
   private readonly chunks: Chunk[] = []
   private readonly players: GameObject[] = []
   private readonly cameras: Camera[] = []
-  private readonly renderSize = 100
+  private readonly renderSize = 250
+  private readonly collisionManager = new CollisionManager()
 
   private lastFrameStart = 0
   private scene?: Scene
@@ -26,21 +28,17 @@ export class Engine {
       }
     }
 
-    for (const player of this.players) {
-      player.start?.()
-    }
-
     for (const camera of this.cameras) {
       camera.start?.()
     }
 
     this.lastFrameStart = performance.now()
-    setInterval(() => this.update(), 1000)
+    requestAnimationFrame(() => this.update())
   }
 
-  public addPlayer(gameObject: GameObject) {
-    this.players.push(gameObject)
-    return gameObject
+  public addPlayer(player: GameObject) {
+    this.players.push(player)
+    return this.addObject(player)
   }
 
   public removePlayer(gameObject: GameObject) {
@@ -49,7 +47,8 @@ export class Engine {
     )
 
     if (index > -1) {
-      return this.players.splice(index, 1)[0]
+      const player = this.players.splice(index, 1)[0]
+      return this.removeObject(player)
     }
 
     return null
@@ -81,20 +80,23 @@ export class Engine {
 
     const objectId = gameObject.objectId
     if (chunkIndex > -1) {
-      this.chunks[chunkIndex].gameObjects.push(gameObject)
+      const chunk = this.chunks[chunkIndex]
+      const objectIndex = chunk.gameObjects.push(gameObject)
+      chunk.objectIdMap.set(gameObject.objectId, objectIndex - 1)
       this.objectIdMap.set(objectId, chunkIndex)
     } else {
       const chunk: Chunk = {
         gameObjects: [],
         objectIdMap: new Map(),
-        startX: startY,
-        startY: startX,
+        startX: startX,
+        startY: startY,
+        chunkId: crypto.randomUUID(),
       }
 
       chunk.gameObjects.push(gameObject)
       chunk.objectIdMap.set(objectId, 0)
-      const chunkIndex = this.chunks.push(chunk) - 1
-      this.objectIdMap.set(objectId, chunkIndex)
+      const objectIndex = this.chunks.push(chunk) - 1
+      this.objectIdMap.set(objectId, objectIndex)
     }
 
     return gameObject
@@ -102,51 +104,75 @@ export class Engine {
 
   public removeObject(gameObject: GameObject) {
     const chunkIndex = this.objectIdMap.get(gameObject.objectId)
-    if (!chunkIndex || chunkIndex < 0 || chunkIndex >= this.chunks.length) {
-      return
+    if (
+      chunkIndex === undefined ||
+      chunkIndex < 0 ||
+      chunkIndex >= this.chunks.length
+    ) {
+      return gameObject
     }
 
     this.objectIdMap.delete(gameObject.objectId)
-
     const chunk = this.chunks[chunkIndex]
     const chunkObjectIndex = chunk.objectIdMap.get(gameObject.objectId)
     if (
-      !chunkObjectIndex ||
+      chunkObjectIndex === undefined ||
       chunkObjectIndex < 0 ||
       chunkObjectIndex >= chunk.gameObjects.length
     ) {
-      return
+      return gameObject
+    }
+
+    if (chunk.gameObjects.length === 1) {
+      chunk.gameObjects.splice(0, 1)
+      chunk.objectIdMap.delete(gameObject.objectId)
+      return gameObject
     }
 
     const replaceGo = chunk.gameObjects.pop()
     if (!replaceGo) {
-      chunk.gameObjects.splice(0, 1)
-      chunk.objectIdMap.delete(gameObject.objectId)
-      return
+      return gameObject
     }
 
-    chunk.gameObjects.splice(chunkObjectIndex, 1, replaceGo)
+    if (replaceGo.objectId !== gameObject.objectId) {
+      chunk.gameObjects.splice(chunkObjectIndex, 1, replaceGo)
+      chunk.objectIdMap.set(replaceGo.objectId, chunkObjectIndex)
+    }
+
     chunk.objectIdMap.delete(gameObject.objectId)
-    chunk.objectIdMap.set(gameObject.objectId, chunkObjectIndex)
     return gameObject
   }
 
   private update() {
     const frameStart = performance.now()
-    this.deltaTime = Math.min(frameStart - this.lastFrameStart / 1000, 0.1)
+    this.deltaTime = Math.min((frameStart - this.lastFrameStart) / 1000, 0.1)
     this.lastFrameStart = frameStart
 
-    const gameObjects = this.getActiveObjects()
+    const chunks = this.getActiveChunks()
+    const gameObjects = [...chunks].map((c) => c.gameObjects).flat()
+
     for (const gameObject of gameObjects) {
       gameObject.earlyUpdate?.()
+    }
+
+    for (const camera of this.cameras) {
+      camera.earlyUpdate?.()
     }
 
     for (const gameObject of gameObjects) {
       gameObject.update?.()
     }
 
+    for (const camera of this.cameras) {
+      camera.update?.()
+    }
+
     for (const gameObject of gameObjects) {
       gameObject.lateUpdate?.()
+    }
+
+    for (const camera of this.cameras) {
+      camera.lateUpdate?.()
     }
 
     for (const gameObject of gameObjects) {
@@ -156,13 +182,15 @@ export class Engine {
     for (const camera of this.cameras) {
       camera.paint(gameObjects)
     }
+
+    this.collisionManager.detectChunkCollisions(chunks, this.renderSize)
+    requestAnimationFrame(() => this.update())
   }
 
   private checkGameObjectChunk(gameObject: GameObject) {
-    const startX =
-      Math.floor(gameObject.transform.x / this.renderSize) * this.renderSize
-    const startY =
-      Math.floor(gameObject.transform.y / this.renderSize) * this.renderSize
+    const { x, y } = gameObject.transform
+    const startX = Math.floor(x / this.renderSize) * this.renderSize
+    const startY = Math.floor(y / this.renderSize) * this.renderSize
     const chunkIndex = this.chunks.findIndex(
       (c) => c.startX === startX && c.startY === startY,
     )
@@ -172,51 +200,28 @@ export class Engine {
       return // GameObject is assigned to the correct chunk
     }
 
-    if (cachedChunkIndex) {
-      // Remove gameObject from cached chunk
-      const oldChunk = this.chunks[cachedChunkIndex]
-      const chunkGameObjectIndex = oldChunk.objectIdMap.get(gameObject.objectId)
-      if (chunkGameObjectIndex) {
-        const lastItem = oldChunk.gameObjects.pop()
-        if (lastItem) {
-          oldChunk.gameObjects.splice(chunkGameObjectIndex, 1, lastItem)
-          oldChunk.objectIdMap.set(lastItem?.objectId, chunkGameObjectIndex)
-        }
-        oldChunk.objectIdMap.delete(gameObject.objectId)
-      }
-    }
-
-    if (chunkIndex === -1) {
-      const chunk: Chunk = {
-        gameObjects: [],
-        objectIdMap: new Map(),
-        startX: startY,
-        startY: startX,
-      }
-
-      chunk.gameObjects.push(gameObject)
-      chunk.objectIdMap.set(gameObject.objectId, 0)
-      const chunkIndex = this.chunks.push(chunk) - 1
-      this.objectIdMap.set(gameObject.objectId, chunkIndex)
-    }
+    this.removeObject(gameObject)
+    this.addObject(gameObject)
   }
 
-  private getActiveObjects() {
+  private getActiveChunks() {
     const activeChunks: Chunk[] = []
     for (const player of this.players) {
       const { x, y } = player.transform
+      const chunkX = Math.floor(x / this.renderSize) * this.renderSize
+      const chunkY = Math.floor(y / this.renderSize) * this.renderSize
       activeChunks.push(
         ...this.chunks.filter(
           (c) =>
-            c.startX - x > -this.renderSize &&
-            c.startY - y > -this.renderSize &&
-            c.startX - x < this.renderSize &&
-            c.startY - y < this.renderSize,
+            !!c.gameObjects.length &&
+            c.startX - chunkX > -this.renderSize &&
+            c.startY - chunkY > -this.renderSize &&
+            c.startX - chunkX < this.renderSize * 2 &&
+            c.startY - chunkY < this.renderSize * 2,
         ),
       )
     }
 
-    const chunkObjects = activeChunks.map((c) => c.gameObjects).flat()
-    return [...new Set([...chunkObjects, ...this.cameras, ...this.players])]
+    return new Set(activeChunks)
   }
 }

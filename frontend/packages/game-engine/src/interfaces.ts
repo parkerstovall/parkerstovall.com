@@ -5,6 +5,7 @@ export type Transform = {
   y: number
   width: number
   height: number
+  rotation: number
 }
 
 export type Collider = {
@@ -22,6 +23,7 @@ export type Chunk = {
   objectIdMap: Map<string, number>
   startX: number
   startY: number
+  chunkId: string
 }
 
 export type Sprite = {
@@ -42,14 +44,17 @@ export abstract class GameObject {
   public texture?: Texture
   public isActive: boolean = true
   public tags: string[] = []
+  public zIndex: number = 0
   public readonly objectId: string
+  public readonly layer: string
 
   protected readonly engine: Engine
 
-  constructor(engine: Engine, position: Transform) {
+  constructor(engine: Engine, position: Transform, layer: string) {
     this.transform = position
     this.engine = engine
     this.objectId = crypto.randomUUID()
+    this.layer = layer
   }
 
   start?(): void
@@ -57,4 +62,6 @@ export abstract class GameObject {
   earlyUpdate?(): void
   update?(): void
   lateUpdate?(): void
+  onCollisionEnter?(gameObject: GameObject): void
+  onCollisionExit?(gameObject: GameObject): void
 }

@@ -1,3 +1,4 @@
+import { BACKGROUND_LAYER, GAME_LAYER, UI_LAYER } from '../constants'
 import type { Engine } from '../engine'
 import type { GameObject, Transform } from '../interfaces'
 import { Camera } from './camera'
@@ -8,10 +9,6 @@ export class TwoDimensionalCamera extends Camera {
   private readonly uiLayer: HTMLCanvasElement
   private readonly width: number
   private readonly height: number
-
-  private readonly backgroundLayerTag = 'background-layer'
-  private readonly gameLayerTag = 'game-layer'
-  private readonly uiLayerTag = 'ui-layer'
 
   private readonly anchor?: GameObject
   private offsetX: number = 0
@@ -33,7 +30,6 @@ export class TwoDimensionalCamera extends Camera {
     this.parent.style.height = height + 'px'
     this.parent.style.position = 'relative'
     this.anchor = anchor
-    console.log(this.anchor)
     if (this.anchor) {
       this.offsetX = this.anchor.transform.x - this.transform.x
       this.offsetY = this.anchor.transform.y - this.transform.y
@@ -66,12 +62,13 @@ export class TwoDimensionalCamera extends Camera {
     if (this.anchor) {
       this.offsetX = this.anchor.transform.x - this.transform.x
       this.offsetY = this.anchor.transform.y - this.transform.y
-      console.log(this.offsetX, this.offsetY)
     }
   }
 
   paint(gameObjects: GameObject[]) {
-    const objectsToPaint = gameObjects.filter((g) => this.shouldPaint(g))
+    const objectsToPaint = gameObjects
+      .filter((g) => this.shouldPaint(g))
+      .sort((o) => o.zIndex)
     const bgCtx = this.backgroundLayer.getContext('2d')!
     const gameCtx = this.gameLayer.getContext('2d')!
     const uiCtx = this.uiLayer.getContext('2d')!
@@ -81,18 +78,29 @@ export class TwoDimensionalCamera extends Camera {
 
     for (const object of objectsToPaint) {
       let ctx: CanvasRenderingContext2D
-      if (object.tags.includes(this.backgroundLayerTag)) {
+      if (object.layer === BACKGROUND_LAYER) {
         ctx = bgCtx
-      } else if (object.tags.includes(this.uiLayerTag)) {
+      } else if (object.layer === UI_LAYER) {
         ctx = uiCtx
-      } else {
+      } else if (object.layer === GAME_LAYER) {
         ctx = gameCtx
+      } else {
+        continue
       }
 
       const texture = object.texture!
-      const { x, y, width, height } = object.transform
+      const { x, y, width, height, rotation } = object.transform
       const drawX = x - this.offsetX
       const drawY = y - this.offsetY
+
+      if (rotation) {
+        ctx.save()
+        const centerX = drawX + width / 2
+        const centerY = drawY + height / 2
+        ctx.translate(centerX, centerY)
+        ctx.rotate(rotation)
+        ctx.translate(-centerX, -centerY)
+      }
 
       switch (texture.type) {
         case 'rectangle':
@@ -110,6 +118,10 @@ export class TwoDimensionalCamera extends Camera {
         case 'image':
           ctx.drawImage(texture.image, drawX, drawY, width, height)
       }
+
+      if (rotation) {
+        ctx.restore()
+      }
     }
   }
 
@@ -118,13 +130,7 @@ export class TwoDimensionalCamera extends Camera {
       return false
     }
 
-    if (
-      !gameObject.tags.some((t) =>
-        [this.backgroundLayerTag, this.gameLayerTag, this.uiLayerTag].includes(
-          t,
-        ),
-      )
-    ) {
+    if (![BACKGROUND_LAYER, UI_LAYER, GAME_LAYER].includes(gameObject.layer)) {
       return false
     }
 

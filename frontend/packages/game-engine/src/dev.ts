@@ -1,13 +1,15 @@
+import { GAME_LAYER } from './constants'
 import { Engine } from './engine'
 import {
   GameObject,
   type Transform,
   type Collider,
   type Scene,
+  type Sprite,
 } from './interfaces'
 import { TwoDimensionalCamera } from './rendering/two-dimensional'
 
-class DevSquare extends GameObject {
+class DevObject extends GameObject {
   public collider: Collider = {
     type: 'box',
   }
@@ -20,40 +22,78 @@ class DevSquare extends GameObject {
     layer: string,
     color: string,
   ) {
-    super(engine, transform)
-    this.tags.push(layer)
+    super(engine, transform, layer)
     this.texture = {
       type: 'rectangle',
       color,
     }
+  }
+}
 
-    if (this.texture.color === 'blue') {
-      this.engine.keyStrokeManager.addKeyEvent('down', 'a', () => {
-        console.log('down')
-        this.transform.x -= 5
-      })
-    } else if (this.texture.color === 'yellow') {
-      this.engine.keyStrokeManager.addKeyEvent('down', 'd', () => {
-        this.transform.x += 5
-      })
+class DevSquare extends GameObject {
+  public collider: Collider = {
+    type: 'box',
+  }
+
+  public tags: string[] = []
+
+  private speedX: number = 125
+  private speedY: number = 125
+  private speedAngle: number = 0.35
+  private readonly text: Sprite
+
+  constructor(
+    engine: Engine,
+    transform: Transform,
+    layer: string,
+    color: string,
+  ) {
+    super(engine, transform, layer)
+    this.texture = {
+      type: 'rectangle',
+      color,
+    }
+    this.text = this.texture
+    this.zIndex = 1
+  }
+
+  earlyUpdate(): void {
+    if (this.engine.keyStrokeManager.pressedKeys.has('a')) {
+      this.transform.x -= this.speedX * this.engine.deltaTime
+    }
+
+    if (this.engine.keyStrokeManager.pressedKeys.has('d')) {
+      this.transform.x += this.speedX * this.engine.deltaTime
+    }
+
+    if (this.engine.keyStrokeManager.pressedKeys.has('w')) {
+      this.transform.y -= this.speedY * this.engine.deltaTime
+    }
+
+    if (this.engine.keyStrokeManager.pressedKeys.has('s')) {
+      this.transform.y += this.speedY * this.engine.deltaTime
+    }
+
+    if (this.engine.keyStrokeManager.pressedKeys.has('q')) {
+      this.transform.rotation -= this.speedAngle * this.engine.deltaTime
+    }
+
+    if (this.engine.keyStrokeManager.pressedKeys.has('e')) {
+      this.transform.rotation += this.speedAngle * this.engine.deltaTime
     }
   }
 
-  // start() {
-  //   console.log('started', this.objectId, this.texture)
-  // }
+  onCollisionEnter?(gameObject: GameObject) {
+    console.log(
+      `I ${this.text?.color} collided with ${(gameObject.texture as Sprite)?.color}`,
+    )
+  }
 
-  // earlyUpdate(): void {
-  //   console.log('early update', this.objectId)
-  // }
-
-  // update() {
-  //   console.log('update', this.objectId)
-  // }
-
-  // lateUpdate(): void {
-  //   console.log('late update', this.objectId)
-  // }
+  onCollisionExit?(gameObject: GameObject) {
+    console.log(
+      `I ${this.text?.color} am no longer colliding with ${(gameObject.texture as Sprite)?.color}`,
+    )
+  }
 }
 
 const devScene: Scene = {
@@ -62,26 +102,38 @@ const devScene: Scene = {
     const blue = engine.addPlayer(
       new DevSquare(
         engine,
-        { x: 50, y: 50, height: 50, width: 50 },
-        'game-layer',
+        { x: 100, y: 50, height: 50, width: 50, rotation: 0 },
+        GAME_LAYER,
         'blue',
       ),
     )
 
-    engine.addPlayer(
-      new DevSquare(
+    engine.addObject(
+      new DevObject(
         engine,
-        { x: 25, y: 50, height: 50, width: 50 },
-        'background-layer',
+        {
+          x: 0,
+          y: 0,
+          width: 25,
+          height: 25,
+          rotation: 0,
+        },
+        GAME_LAYER,
         'green',
       ),
     )
 
-    const yellow = engine.addPlayer(
-      new DevSquare(
+    engine.addObject(
+      new DevObject(
         engine,
-        { x: 75, y: 50, height: 50, width: 50 },
-        'ui-layer',
+        {
+          x: 100,
+          y: 0,
+          width: 25,
+          height: 25,
+          rotation: 0,
+        },
+        GAME_LAYER,
         'yellow',
       ),
     )
@@ -90,31 +142,16 @@ const devScene: Scene = {
       new TwoDimensionalCamera(
         engine,
         {
-          x: 50,
+          x: 100,
           y: 50,
           height: 50,
           width: 50,
+          rotation: 0,
         },
         250,
         250,
         'game',
         blue,
-      ),
-    )
-
-    engine.addCamera(
-      new TwoDimensionalCamera(
-        engine,
-        {
-          x: 50,
-          y: 50,
-          height: 50,
-          width: 50,
-        },
-        250,
-        250,
-        'game-2',
-        yellow,
       ),
     )
   },
