@@ -1,6 +1,6 @@
-import { BACKGROUND_LAYER, GAME_LAYER, UI_LAYER } from '../constants'
+import { CACHE_NAMES, LAYERS } from '../constants'
 import type { Engine } from '../engine'
-import type { GameObject, Transform } from '../interfaces'
+import type { GameObject, Transform } from '../types'
 import { Camera } from './camera'
 
 export class TwoDimensionalCamera extends Camera {
@@ -17,12 +17,13 @@ export class TwoDimensionalCamera extends Camera {
   constructor(
     engine: Engine,
     position: Transform,
+    layer: number,
     width: number,
     height: number,
     parentId: string,
     anchor?: GameObject,
   ) {
-    super(engine, position, parentId)
+    super(engine, position, layer, parentId)
 
     this.width = width
     this.height = height
@@ -65,10 +66,13 @@ export class TwoDimensionalCamera extends Camera {
     }
   }
 
-  paint(gameObjects: GameObject[]) {
-    const objectsToPaint = gameObjects
+  paint() {
+    const objectsToPaint = this.engine
+      .getGameObjects(CACHE_NAMES.Z_INDEX_SORT, (gameObjects) =>
+        [...gameObjects].sort((a, b) => a.zIndex - b.zIndex),
+      )
       .filter((g) => this.shouldPaint(g))
-      .sort((o) => o.zIndex)
+
     const bgCtx = this.backgroundLayer.getContext('2d')!
     const gameCtx = this.gameLayer.getContext('2d')!
     const uiCtx = this.uiLayer.getContext('2d')!
@@ -78,11 +82,11 @@ export class TwoDimensionalCamera extends Camera {
 
     for (const object of objectsToPaint) {
       let ctx: CanvasRenderingContext2D
-      if (object.layer === BACKGROUND_LAYER) {
+      if (object.layer === LAYERS.BACKGROUND_LAYER) {
         ctx = bgCtx
-      } else if (object.layer === UI_LAYER) {
+      } else if (object.layer === LAYERS.UI_LAYER) {
         ctx = uiCtx
-      } else if (object.layer === GAME_LAYER) {
+      } else if (object.layer === LAYERS.GAME_LAYER) {
         ctx = gameCtx
       } else {
         continue
@@ -127,10 +131,6 @@ export class TwoDimensionalCamera extends Camera {
 
   private shouldPaint(gameObject: GameObject) {
     if (!gameObject.texture) {
-      return false
-    }
-
-    if (![BACKGROUND_LAYER, UI_LAYER, GAME_LAYER].includes(gameObject.layer)) {
       return false
     }
 

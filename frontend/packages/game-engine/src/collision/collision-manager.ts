@@ -1,9 +1,11 @@
-import { GameObject, type Chunk } from '../interfaces'
+import { LAYERS } from '../constants'
+import { GameObject, type Chunk, type Vector2D } from '../types'
+import { BoxCollider, PolygonCollider } from './colliders'
 
 export class CollisionManager {
   private readonly currentCollisions: Set<string> = new Set()
 
-  public detectChunkCollisions = (chunks: Set<Chunk>, chunkSize: number) => {
+  public detectChunkCollisions = (chunks: Chunk[], chunkSize: number) => {
     const chunkCollisionCache = new Set<string>()
 
     for (const chunk of chunks) {
@@ -30,16 +32,17 @@ export class CollisionManager {
   }
 
   private detectIntraChunkObjectCollisions = (chunk: Chunk) => {
-    for (let i = 0; i < chunk.gameObjects.length; i++) {
-      for (let j = i + 1; j < chunk.gameObjects.length; j++) {
-        this.detectObjectCollision(chunk.gameObjects[i], chunk.gameObjects[j])
+    const gameObjects = chunk.getLayerObjects(LAYERS.GAME_LAYER)
+    for (let i = 0; i < gameObjects.length; i++) {
+      for (let j = i + 1; j < gameObjects.length; j++) {
+        this.detectObjectCollision(gameObjects[i], gameObjects[j])
       }
     }
   }
 
   private detectInterChunkObjectCollisions = (chunkA: Chunk, chunkB: Chunk) => {
-    for (const gameObjectA of chunkA.gameObjects) {
-      for (const gameObjectB of chunkB.gameObjects) {
+    for (const gameObjectA of chunkA.getLayerObjects(LAYERS.GAME_LAYER)) {
+      for (const gameObjectB of chunkB.getLayerObjects(LAYERS.GAME_LAYER)) {
         if (gameObjectA.objectId === gameObjectB.objectId) {
           continue
         }
@@ -55,10 +58,17 @@ export class CollisionManager {
   ) => {
     let collided = false
     if (
-      gameObjectA.collider?.type === 'box' &&
-      gameObjectB.collider?.type === 'box'
+      !gameObjectA.transform.rotation &&
+      !gameObjectB.transform.rotation &&
+      gameObjectA.collider instanceof BoxCollider &&
+      gameObjectB.collider instanceof BoxCollider
     ) {
       collided = this.detectBoxCollision(gameObjectA, gameObjectB)
+    } else if (
+      gameObjectA.collider instanceof PolygonCollider &&
+      gameObjectB.collider instanceof PolygonCollider
+    ) {
+      collided = this.detectSATCollision(gameObjectA, gameObjectB)
     }
 
     const cacheKey = this.getCacheKey(
@@ -82,6 +92,70 @@ export class CollisionManager {
       gameObjectA.onCollisionExit?.(gameObjectB)
       gameObjectB.onCollisionExit?.(gameObjectA)
     }
+  }
+
+  private detectSATCollision = (
+    gameObjectA: GameObject,
+    gameObjectB: GameObject,
+  ) => {
+    const verticesA = (gameObjectA.collider as PolygonCollider).getVertices()
+    const verticesB = (gameObjectB.collider as PolygonCollider).getVertices()
+    const axes: Vector2D[] = [
+      ...this.getAxes(verticesA),
+      ...this.getAxes(verticesB),
+    ]
+
+    for (const axis of axes) {
+      const { min: minA, max: maxA } = this.getAxisDotProducts(axis, verticesA)
+      const { min: minB, max: maxB } = this.getAxisDotProducts(axis, verticesB)
+
+      if (minA > maxB || minB > maxA) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  private getAxisDotProducts(axis: Vector2D, vertices: Vector2D[]) {
+    let min = this.getDotProduct(axis, vertices[0])
+    let max = min
+    for (let i = 1; i < vertices.length; i++) {
+      const dotProduct = this.getDotProduct(axis, vertices[i])
+      if (dotProduct < min) {
+        min = dotProduct
+      }
+
+      if (dotProduct > max) {
+        max = dotProduct
+      }
+    }
+
+    return { min, max }
+  }
+
+  private getDotProduct(vector1: Vector2D, vector2: Vector2D) {
+    return vector1.x * vector2.x + vector1.y * vector2.y
+  }
+
+  private getAxes(vertices: Vector2D[]) {
+    const axes: Vector2D[] = []
+    for (let i = 0; i < vertices.length; i++) {
+      const vertex = vertices[i]
+      const nextVertex = vertices[i + 1 === vertices.length ? 0 : i + 1]
+
+      const normalizedVector = {
+        x: vertex.x - nextVertex.x,
+        y: vertex.y - nextVertex.y,
+      }
+
+      axes.push({
+        x: normalizedVector.y,
+        y: normalizedVector.x * -1,
+      })
+    }
+
+    return axes
   }
 
   private detectBoxCollision = (
@@ -121,10 +195,10 @@ export class CollisionManager {
 
   private getNearbyChunks = (
     searchChunk: Chunk,
-    chunks: Set<Chunk>,
+    chunks: Chunk[],
     chunkSize: number,
   ) => {
-    const nearbyChunks: Set<Chunk> = new Set()
+    const nearbyChunks: Chunk[] = []
     const margin = chunkSize / 5
     const bounds = {
       minX: searchChunk.startX - chunkSize - margin,
@@ -140,7 +214,7 @@ export class CollisionManager {
         chunk.startY > bounds.minY &&
         chunk.startY < bounds.maxY
       ) {
-        nearbyChunks.add(chunk)
+        nearbyChunks.push(chunk)
       }
     }
 

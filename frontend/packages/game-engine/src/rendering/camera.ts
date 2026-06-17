@@ -1,11 +1,16 @@
 import type { Engine } from '../engine'
-import { GameObject, type Transform } from '../interfaces'
+import { Chunk, GameObject, type Transform } from '../types'
 
 export abstract class Camera extends GameObject {
   protected readonly parent: HTMLElement
 
-  constructor(engine: Engine, position: Transform, parentId: string) {
-    super(engine, position)
+  constructor(
+    engine: Engine,
+    position: Transform,
+    layer: number,
+    parentId: string,
+  ) {
+    super(engine, position, layer)
 
     const maybeParent = document.getElementById(parentId)
     if (!maybeParent) {
@@ -15,5 +20,5 @@ export abstract class Camera extends GameObject {
     this.parent = maybeParent
   }
 
-  abstract paint(gameObjects: GameObject[]): void
+  abstract paint(chunks: Chunk[]): void
 }
