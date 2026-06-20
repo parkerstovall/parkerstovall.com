@@ -1,9 +1,19 @@
 import { LAYERS } from '../constants'
 import { GameObject, type Chunk } from '../types'
+import { removeObjectFromMathCache } from './math-extensions'
 import { hasCollision } from './object-collisions'
 
 export class CollisionManager {
   private readonly currentCollisions: Set<string> = new Set()
+
+  public removeGameObject = (objectId: string) => {
+    removeObjectFromMathCache(objectId)
+    this.currentCollisions.forEach((item) => {
+      if (item.includes(objectId)) {
+        this.currentCollisions.delete(item)
+      }
+    })
+  }
 
   public detectChunkCollisions = (chunks: Chunk[], chunkSize: number) => {
     const chunkCollisionCache = new Set<string>()

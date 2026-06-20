@@ -4,6 +4,8 @@ import { CollisionManager } from './collision/collision-manager'
 import { KeystrokeManager } from './managers/keystroke-manager'
 import type { Camera } from './rendering/camera'
 
+export let frameNumber: number = 0
+
 export class Engine {
   private readonly playerIds: Map<string, number> = new Map()
   private readonly objectIdMap: Map<string, number> = new Map()
@@ -97,6 +99,7 @@ export class Engine {
   }
 
   public removeObject(gameObject: GameObject) {
+    this.collisionManager.removeGameObject(gameObject.objectId)
     const chunkIndex = this.objectIdMap.get(gameObject.objectId)
     if (
       chunkIndex === undefined ||
@@ -130,6 +133,7 @@ export class Engine {
   }
 
   private update() {
+    frameNumber++
     const frameStart = performance.now()
     this.deltaTime = Math.min((frameStart - this.lastFrameStart) / 1000, 0.1)
     this.lastFrameStart = frameStart
