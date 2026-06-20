@@ -1,6 +1,6 @@
 import { LAYERS } from '../constants'
-import { GameObject, type Chunk, type Vector2D } from '../types'
-import { BoxCollider, PolygonCollider } from './colliders'
+import { GameObject, type Chunk } from '../types'
+import { hasCollision } from './object-collisions'
 
 export class CollisionManager {
   private readonly currentCollisions: Set<string> = new Set()
@@ -56,20 +56,7 @@ export class CollisionManager {
     gameObjectA: GameObject,
     gameObjectB: GameObject,
   ) => {
-    let collided = false
-    if (
-      !gameObjectA.transform.rotation &&
-      !gameObjectB.transform.rotation &&
-      gameObjectA.collider instanceof BoxCollider &&
-      gameObjectB.collider instanceof BoxCollider
-    ) {
-      collided = this.detectBoxCollision(gameObjectA, gameObjectB)
-    } else if (
-      gameObjectA.collider instanceof PolygonCollider &&
-      gameObjectB.collider instanceof PolygonCollider
-    ) {
-      collided = this.detectSATCollision(gameObjectA, gameObjectB)
-    }
+    const collided = hasCollision(gameObjectA, gameObjectB)
 
     const cacheKey = this.getCacheKey(
       gameObjectA.objectId,
@@ -92,105 +79,6 @@ export class CollisionManager {
       gameObjectA.onCollisionExit?.(gameObjectB)
       gameObjectB.onCollisionExit?.(gameObjectA)
     }
-  }
-
-  private detectSATCollision = (
-    gameObjectA: GameObject,
-    gameObjectB: GameObject,
-  ) => {
-    const verticesA = (gameObjectA.collider as PolygonCollider).getVertices()
-    const verticesB = (gameObjectB.collider as PolygonCollider).getVertices()
-    const axes: Vector2D[] = [
-      ...this.getAxes(verticesA),
-      ...this.getAxes(verticesB),
-    ]
-
-    for (const axis of axes) {
-      const { min: minA, max: maxA } = this.getAxisDotProducts(axis, verticesA)
-      const { min: minB, max: maxB } = this.getAxisDotProducts(axis, verticesB)
-
-      if (minA > maxB || minB > maxA) {
-        return false
-      }
-    }
-
-    return true
-  }
-
-  private getAxisDotProducts(axis: Vector2D, vertices: Vector2D[]) {
-    let min = this.getDotProduct(axis, vertices[0])
-    let max = min
-    for (let i = 1; i < vertices.length; i++) {
-      const dotProduct = this.getDotProduct(axis, vertices[i])
-      if (dotProduct < min) {
-        min = dotProduct
-      }
-
-      if (dotProduct > max) {
-        max = dotProduct
-      }
-    }
-
-    return { min, max }
-  }
-
-  private getDotProduct(vector1: Vector2D, vector2: Vector2D) {
-    return vector1.x * vector2.x + vector1.y * vector2.y
-  }
-
-  private getAxes(vertices: Vector2D[]) {
-    const axes: Vector2D[] = []
-    for (let i = 0; i < vertices.length; i++) {
-      const vertex = vertices[i]
-      const nextVertex = vertices[i + 1 === vertices.length ? 0 : i + 1]
-
-      const normalizedVector = {
-        x: vertex.x - nextVertex.x,
-        y: vertex.y - nextVertex.y,
-      }
-
-      axes.push({
-        x: normalizedVector.y,
-        y: normalizedVector.x * -1,
-      })
-    }
-
-    return axes
-  }
-
-  private detectBoxCollision = (
-    gameObjectA: GameObject,
-    gameObjectB: GameObject,
-  ) => {
-    if (
-      gameObjectA.transform.x + gameObjectA.transform.width <
-      gameObjectB.transform.x
-    ) {
-      return false
-    }
-
-    if (
-      gameObjectA.transform.x >
-      gameObjectB.transform.x + gameObjectB.transform.width
-    ) {
-      return false
-    }
-
-    if (
-      gameObjectA.transform.y + gameObjectA.transform.height <
-      gameObjectB.transform.y
-    ) {
-      return false
-    }
-
-    if (
-      gameObjectA.transform.y >
-      gameObjectB.transform.y + gameObjectB.transform.height
-    ) {
-      return false
-    }
-
-    return true
   }
 
   private getNearbyChunks = (

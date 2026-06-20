@@ -1,4 +1,3 @@
-import { BoxCollider } from '../collision/colliders'
 import type { Engine } from '../engine'
 import type { Sprite } from '../rendering/textures'
 import { GameObject, type Transform } from '../types'
@@ -22,9 +21,10 @@ export class DevPlayer extends GameObject {
       type: 'rectangle',
       color,
     }
+
     this.text = this.texture
     this.zIndex = 1
-    this.collider = new BoxCollider(this)
+    this.collider = 'box'
   }
 
   earlyUpdate(): void {

@@ -1,4 +1,3 @@
-import { BoxCollider } from '../collision/colliders'
 import type { Engine } from '../engine'
 import { GameObject, type Transform } from '../types'
 
@@ -14,9 +13,9 @@ export class DevObject extends GameObject {
   ) {
     super(engine, transform, layer)
     this.texture = {
-      type: 'rectangle',
+      type: 'circle',
       color,
     }
-    this.collider = new BoxCollider(this)
+    this.collider = 'circle'
   }
 }
