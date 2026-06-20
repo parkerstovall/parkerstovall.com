@@ -138,11 +138,11 @@ const detectCircleBoxCollision = (
     const vertexA = vertices[i]
     const vertexB = vertices[(i + 1) % vertices.length]
 
-    const edgeLength = getPointDistance(vertexA, vertexB)
-
     const leftSideX = (center.x - vertexA.x) * (vertexB.x - vertexA.x)
     const leftSideY = (center.y - vertexA.y) * (vertexB.y - vertexA.y)
-    const rightSide = edgeLength * edgeLength
+    const edgeX = vertexB.x - vertexA.x
+    const edgeY = vertexB.y - vertexA.y
+    const rightSide = edgeX * edgeX + edgeY * edgeY
     const dot = (leftSideX + leftSideY) / rightSide
     const dotClamp = Math.max(0, Math.min(dot, 1))
 

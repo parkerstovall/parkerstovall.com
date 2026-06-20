@@ -9,10 +9,7 @@ export class CollisionManager {
     const chunkCollisionCache = new Set<string>()
 
     for (const chunk of chunks) {
-      const nearbyChunks = [
-        ...this.getNearbyChunks(chunk, chunks, chunkSize),
-        chunk,
-      ]
+      const nearbyChunks = [...this.getNearbyChunks(chunk, chunks, chunkSize)]
       for (const nearbyChunk of nearbyChunks) {
         const cacheKey = this.getCacheKey(chunk.chunkId, nearbyChunk.chunkId)
         if (chunkCollisionCache.has(cacheKey)) {
@@ -109,7 +106,7 @@ export class CollisionManager {
     return nearbyChunks
   }
 
-  private getCacheKey = (...values: string[]) => {
-    return values.sort().join(':')
+  private getCacheKey = (a: string, b: string) => {
+    return a < b ? `${a}:${b}` : `${b}:${a}`
   }
 }

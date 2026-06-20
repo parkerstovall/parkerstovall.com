@@ -1,4 +1,4 @@
-import type { Vector2D, GameObject } from '../types'
+import { type Vector2D, GameObject } from '../types'
 
 export const getAxisDotProducts = (axis: Vector2D, vertices: Vector2D[]) => {
   let min = getDotProduct(axis, vertices[0])
@@ -22,26 +22,35 @@ export const getDotProduct = (vector1: Vector2D, vector2: Vector2D) => {
 }
 
 export const getAxes = (vertices: Vector2D[]) => {
-  const axes: Vector2D[] = []
-  for (let i = 0; i < vertices.length; i++) {
-    const vertex = vertices[i]
-    const nextVertex = vertices[i + 1 === vertices.length ? 0 : i + 1]
-
-    const normalizedVector = {
-      x: vertex.x - nextVertex.x,
-      y: vertex.y - nextVertex.y,
-    }
-
-    axes.push({
-      x: normalizedVector.y,
-      y: normalizedVector.x * -1,
-    })
-  }
-
-  return axes
+  return [
+    getEdgeAxis(vertices[0], vertices[1]),
+    getEdgeAxis(vertices[1], vertices[2]),
+  ]
 }
 
+const getEdgeAxis = (vertexA: Vector2D, vertexB: Vector2D) => {
+  const edgeVector = {
+    x: vertexA.x - vertexB.x,
+    y: vertexA.y - vertexB.y,
+  }
+
+  return {
+    x: edgeVector.y,
+    y: edgeVector.x * -1,
+  }
+}
+
+const verticesCache: Map<string, Vector2D[]> = new Map()
 export const getVertices = (gameObject: GameObject) => {
+  let vertices = verticesCache.get(gameObject.objectId)
+  if (!vertices) {
+    vertices = getVerticesInner(gameObject)
+    verticesCache.set(gameObject.objectId, vertices)
+  }
+  return vertices
+}
+
+const getVerticesInner = (gameObject: GameObject) => {
   const { x, y, width, height, rotation } = gameObject.transform
   const vertices: Vector2D[] = [
     { x, y },
@@ -100,7 +109,10 @@ export const getPointInRectangle = (
 
   if (!rotation) {
     return (
-      point.x > x && point.x < x + width && point.y > y && point.y < y + height
+      point.x >= x &&
+      point.x <= x + width &&
+      point.y >= y &&
+      point.y <= y + height
     )
   }
 
