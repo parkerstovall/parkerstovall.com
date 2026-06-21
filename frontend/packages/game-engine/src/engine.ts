@@ -23,6 +23,20 @@ export class Engine {
   public keyStrokeManager = new KeystrokeManager()
   public deltaTime: number = 0
   public renderSize = 500
+  public isPaused = false
+
+  constructor() {
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'p') return
+
+      if (this.isPaused) {
+        this.isPaused = false
+        requestAnimationFrame(() => this.update())
+      } else {
+        this.isPaused = true
+      }
+    })
+  }
 
   public setScene(scene: Scene) {
     this.scene?.destroy?.()
@@ -44,7 +58,7 @@ export class Engine {
   }
 
   public addPlayer(player: GameObject) {
-    const index = this.players.push(player)
+    const index = this.players.push(player) - 1
     this.playerIds.set(player.objectId, index)
     return this.addObject(player)
   }
@@ -93,15 +107,20 @@ export class Engine {
       let { x: xA, y: yA } = vertexA
       let { x: xB, y: yB } = vertexB
       if (xB < xA) {
-        xB *= -1
+        const tempX = xA
+        xA = xB
+        xB = tempX
       }
 
       if (yB < yA) {
-        yB *= -1
+        const tempY = yA
+        yA = yB
+        yB = tempY
       }
 
+      const startY = yA
       while (xA <= xB) {
-        yA = vertexA.y
+        yA = startY
         while (yA <= yB) {
           const { x: chunkX, y: chunkY } = this.getChunkCoords({ x: xA, y: yA })
           let chunkIndex = this.chunks.findIndex(
@@ -168,6 +187,10 @@ export class Engine {
   }
 
   private update() {
+    if (this.isPaused) {
+      return
+    }
+
     frameNumber++
     const frameStart = performance.now()
     this.deltaTime = Math.min((frameStart - this.lastFrameStart) / 1000, 0.1)

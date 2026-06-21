@@ -1,13 +1,13 @@
 import { LAYERS } from '../constants'
 import type { Scene } from '../types'
-import { TwoDimensionalCamera } from '../rendering/two-dimensional'
 import { DevObject } from './dev-object'
 import { DevPlayer } from './dev-player'
+import { RayCastCamera } from '../rendering/ray-caster'
 
 export const devScene: Scene = {
   name: 'Dev Scene',
   load: (engine) => {
-    engine.renderSize = 250
+    engine.renderSize = 2000
     const blue = engine.addPlayer(
       new DevPlayer(
         engine,
@@ -48,7 +48,7 @@ export const devScene: Scene = {
     )
 
     engine.addCamera(
-      new TwoDimensionalCamera(
+      new RayCastCamera(
         engine,
         {
           x: 100,
@@ -58,8 +58,8 @@ export const devScene: Scene = {
           rotation: 0,
         },
         LAYERS.UI_LAYER,
-        250,
-        250,
+        500,
+        500,
         'game',
         blue,
       ),
