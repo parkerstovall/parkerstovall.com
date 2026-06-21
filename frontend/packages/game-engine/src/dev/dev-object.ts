@@ -13,9 +13,9 @@ export class DevObject extends GameObject {
   ) {
     super(engine, transform, layer)
     this.texture = {
-      type: 'circle',
+      type: 'rectangle',
       color,
     }
-    this.collider = 'circle'
+    this.collider = 'box'
   }
 }

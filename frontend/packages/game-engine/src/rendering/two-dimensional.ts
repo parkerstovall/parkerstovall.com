@@ -67,11 +67,10 @@ export class TwoDimensionalCamera extends Camera {
   }
 
   paint() {
-    const objectsToPaint = this.engine
-      .getGameObjects(CACHE_NAMES.Z_INDEX_SORT, (gameObjects) =>
-        [...gameObjects].sort((a, b) => a.zIndex - b.zIndex),
-      )
-      .filter((g) => this.shouldPaint(g))
+    const objects = this.engine.getGameObjects(
+      CACHE_NAMES.Z_INDEX_SORT,
+      (gameObjects) => [...gameObjects].sort((a, b) => a.zIndex - b.zIndex),
+    )
 
     const bgCtx = this.backgroundLayer.getContext('2d')!
     const gameCtx = this.gameLayer.getContext('2d')!
@@ -80,7 +79,11 @@ export class TwoDimensionalCamera extends Camera {
     gameCtx.clearRect(0, 0, this.width, this.height)
     uiCtx.clearRect(0, 0, this.width, this.height)
 
-    for (const object of objectsToPaint) {
+    for (const object of objects) {
+      if (!this.shouldPaint(object)) {
+        continue
+      }
+
       let ctx: CanvasRenderingContext2D
       if (object.layer === LAYERS.BACKGROUND_LAYER) {
         ctx = bgCtx

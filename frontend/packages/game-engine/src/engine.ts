@@ -1,15 +1,16 @@
 import type { CACHE_KEYS } from './constants'
-import { Chunk, GameObject, type Scene } from './types'
+import { Chunk, GameObject, type Scene, type Vector2D } from './types'
 import { CollisionManager } from './collision/collision-manager'
 import { KeystrokeManager } from './managers/keystroke-manager'
 import type { Camera } from './rendering/camera'
+import { getVertices } from './collision/math-extensions'
 
 export let frameNumber: number = 0
 
 export class Engine {
-  private readonly playerIds: Map<string, number> = new Map()
-  private readonly objectIdMap: Map<string, number> = new Map()
-  private readonly gameObjectCache: Map<number, GameObject[]> = new Map()
+  private readonly playerIds = new Map<string, number>()
+  private readonly objectIdToChunkMap = new Map<string, Set<number>>()
+  private readonly gameObjectCache = new Map<number, GameObject[]>()
   private readonly chunks: Chunk[] = []
   private readonly players: GameObject[] = []
   private readonly cameras: Camera[] = []
@@ -76,41 +77,75 @@ export class Engine {
   }
 
   public addObject(gameObject: GameObject) {
-    const startX =
-      Math.floor(gameObject.transform.x / this.renderSize) * this.renderSize
-    const startY =
-      Math.floor(gameObject.transform.y / this.renderSize) * this.renderSize
-    let chunkIndex = this.chunks.findIndex(
-      (c) => c.startX === startX && c.startY === startY,
-    )
+    const vertices = getVertices(gameObject)
 
-    let chunk: Chunk
-    if (chunkIndex > -1) {
-      chunk = this.chunks[chunkIndex]
-    } else {
-      chunk = new Chunk(startX, startY)
-      chunkIndex = this.chunks.push(chunk) - 1
+    let chunkIndexes = this.objectIdToChunkMap.get(gameObject.objectId)
+    if (!chunkIndexes) {
+      chunkIndexes = new Set()
     }
 
-    chunk.addObject(gameObject)
-    this.objectIdMap.set(gameObject.objectId, chunkIndex)
+    const addedIndexes = new Set<number>()
 
+    for (let i = 0; i < vertices.length; i++) {
+      const vertexA = vertices[i]
+      const vertexB = vertices[(i + 1) % vertices.length]
+
+      let { x: xA, y: yA } = vertexA
+      let { x: xB, y: yB } = vertexB
+      if (xB < xA) {
+        xB *= -1
+      }
+
+      if (yB < yA) {
+        yB *= -1
+      }
+
+      while (xA <= xB) {
+        yA = vertexA.y
+        while (yA <= yB) {
+          const { x: chunkX, y: chunkY } = this.getChunkCoords({ x: xA, y: yA })
+          let chunkIndex = this.chunks.findIndex(
+            (c) => c.startX === chunkX && c.startY === chunkY,
+          )
+
+          if (chunkIndex === -1 || !addedIndexes.has(chunkIndex)) {
+            let chunk: Chunk
+            if (chunkIndex > -1) {
+              chunk = this.chunks[chunkIndex]
+            } else {
+              chunk = new Chunk(chunkX, chunkY)
+              chunkIndex = this.chunks.push(chunk) - 1
+            }
+
+            addedIndexes.add(chunkIndex)
+            chunk.addObject(gameObject)
+            chunkIndexes.add(chunkIndex)
+          }
+
+          yA += this.renderSize
+        }
+
+        xA += this.renderSize
+      }
+    }
+
+    this.objectIdToChunkMap.set(gameObject.objectId, chunkIndexes)
     return gameObject
   }
 
   public removeObject(gameObject: GameObject) {
     this.collisionManager.removeGameObject(gameObject.objectId)
-    const chunkIndex = this.objectIdMap.get(gameObject.objectId)
-    if (
-      chunkIndex === undefined ||
-      chunkIndex < 0 ||
-      chunkIndex >= this.chunks.length
-    ) {
+    const chunkIndexes = this.objectIdToChunkMap.get(gameObject.objectId)
+    if (!chunkIndexes) {
       return gameObject
     }
 
-    this.objectIdMap.delete(gameObject.objectId)
-    this.chunks[chunkIndex].removeObject(gameObject)
+    this.objectIdToChunkMap.delete(gameObject.objectId)
+
+    for (const chunkIndex of chunkIndexes) {
+      this.chunks[chunkIndex].removeObject(gameObject)
+    }
+
     return gameObject
   }
 
@@ -178,16 +213,35 @@ export class Engine {
   }
 
   private checkGameObjectChunk(gameObject: GameObject) {
-    const { x, y } = gameObject.transform
-    const startX = Math.floor(x / this.renderSize) * this.renderSize
-    const startY = Math.floor(y / this.renderSize) * this.renderSize
-    const chunkIndex = this.chunks.findIndex(
-      (c) => c.startX === startX && c.startY === startY,
-    )
+    const vertices = getVertices(gameObject)
 
-    const cachedChunkIndex = this.objectIdMap.get(gameObject.objectId)
-    if (cachedChunkIndex === chunkIndex) {
-      return // GameObject is assigned to the correct chunk
+    const chunkIndexes: Set<number> = new Set()
+
+    for (const vertex of vertices) {
+      const { x, y } = this.getChunkCoords(vertex)
+      const chunkIndex = this.chunks.findIndex(
+        (c) => c.startX === x && c.startY === y,
+      )
+
+      if (chunkIndex > -1) {
+        chunkIndexes.add(chunkIndex)
+      }
+    }
+
+    const cachedChunkIndexes = this.objectIdToChunkMap.get(gameObject.objectId)
+    if (cachedChunkIndexes) {
+      let exactMatch = true
+
+      for (const chunkIndex of cachedChunkIndexes) {
+        if (!chunkIndexes.has(chunkIndex)) {
+          exactMatch = false
+          break
+        }
+      }
+
+      if (exactMatch) {
+        return // GameObject already assigned to the right chunks
+      }
     }
 
     this.removeObject(gameObject)
@@ -210,17 +264,15 @@ export class Engine {
     const chunkIds: Set<string> = new Set()
 
     for (const player of this.players) {
-      const { x, y } = player.transform
-      const chunkX = Math.floor(x / this.renderSize) * this.renderSize
-      const chunkY = Math.floor(y / this.renderSize) * this.renderSize
+      const { x, y } = this.getChunkCoords(player.transform)
       for (const c of this.chunks) {
         if (
           !chunkIds.has(c.chunkId) &&
           !!c.gameObjects.length &&
-          c.startX - chunkX > -this.renderSize &&
-          c.startY - chunkY > -this.renderSize &&
-          c.startX - chunkX < this.renderSize * 2 &&
-          c.startY - chunkY < this.renderSize * 2
+          c.startX - x > -this.renderSize * 2 &&
+          c.startY - y > -this.renderSize * 2 &&
+          c.startX - x < this.renderSize * 2 &&
+          c.startY - y < this.renderSize * 2
         ) {
           activeChunks.push(c)
           chunkIds.add(c.chunkId)
@@ -234,5 +286,12 @@ export class Engine {
   private setDirty() {
     this.activeChunks = null
     this.gameObjectCache.clear()
+  }
+
+  private getChunkCoords(point: Vector2D) {
+    const { x, y } = point
+    const startX = Math.floor(x / this.renderSize) * this.renderSize
+    const startY = Math.floor(y / this.renderSize) * this.renderSize
+    return { x: startX, y: startY } as Vector2D
   }
 }
