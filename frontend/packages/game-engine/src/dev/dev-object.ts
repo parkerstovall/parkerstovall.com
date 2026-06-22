@@ -1,4 +1,5 @@
 import type { Engine } from '../engine'
+import type { Color } from '../rendering/textures'
 import { GameObject, type Transform } from '../types'
 
 export class DevObject extends GameObject {
@@ -9,7 +10,7 @@ export class DevObject extends GameObject {
     engine: Engine,
     transform: Transform,
     layer: number,
-    color: string,
+    color: Color,
   ) {
     super(engine, transform, layer)
     this.texture = {

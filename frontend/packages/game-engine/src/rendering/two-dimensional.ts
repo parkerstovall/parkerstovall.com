@@ -2,6 +2,7 @@ import { CACHE_NAMES, LAYERS } from '../constants'
 import type { Engine } from '../engine'
 import type { GameObject, Transform } from '../types'
 import { Camera } from './camera'
+import { getRGB } from './textures'
 
 export class TwoDimensionalCamera extends Camera {
   private readonly backgroundLayer: HTMLCanvasElement
@@ -111,13 +112,13 @@ export class TwoDimensionalCamera extends Camera {
 
       switch (texture.type) {
         case 'rectangle':
-          ctx.fillStyle = texture.color
+          ctx.fillStyle = getRGB(texture.color)
           ctx.fillRect(drawX, drawY, width, height)
           break
         case 'circle':
           const centerX = drawX + width / 2
           const centerY = drawY + height / 2
-          ctx.fillStyle = texture.color
+          ctx.fillStyle = getRGB(texture.color)
           ctx.beginPath()
           ctx.arc(centerX, centerY, width / 2, 0, 2 * Math.PI)
           ctx.fill()

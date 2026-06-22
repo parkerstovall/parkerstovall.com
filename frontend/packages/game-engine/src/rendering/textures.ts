@@ -1,6 +1,23 @@
+export type Color = {
+  r: number
+  g: number
+  b: number
+}
+
+export const getRGB = (color: Color, shade?: number) => {
+  if (shade === undefined) {
+    return `rgb(${color.r}, ${color.g}, ${color.b})`
+  }
+
+  const r = Math.floor(color.r * shade)
+  const g = Math.floor(color.g * shade)
+  const b = Math.floor(color.b * shade)
+  return `rgb(${r}, ${g}, ${b})`
+}
+
 export type Sprite = {
   type: 'circle' | 'rectangle'
-  color: string
+  color: Color
 }
 
 export type Image = {

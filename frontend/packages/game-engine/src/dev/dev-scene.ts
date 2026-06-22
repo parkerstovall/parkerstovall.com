@@ -13,7 +13,7 @@ export const devScene: Scene = {
         engine,
         { x: 75, y: 100, height: 25, width: 25, rotation: 0 },
         LAYERS.GAME_LAYER,
-        'blue',
+        { r: 0, g: 100, b: 205 },
       ),
     )
 
@@ -28,7 +28,7 @@ export const devScene: Scene = {
           rotation: 0,
         },
         LAYERS.GAME_LAYER,
-        'gray',
+        { r: 50, g: 200, b: 125 },
       ),
     )
 
@@ -43,7 +43,7 @@ export const devScene: Scene = {
           rotation: 0,
         },
         LAYERS.GAME_LAYER,
-        'gray',
+        { r: 0, g: 100, b: 205 },
       ),
     )
 

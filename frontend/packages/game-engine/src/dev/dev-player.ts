@@ -1,5 +1,5 @@
 import type { Engine } from '../engine'
-import type { Sprite } from '../rendering/textures'
+import type { Color, Sprite } from '../rendering/textures'
 import { GameObject, type Transform } from '../types'
 
 export class DevPlayer extends GameObject {
@@ -14,7 +14,7 @@ export class DevPlayer extends GameObject {
     engine: Engine,
     transform: Transform,
     layer: number,
-    color: string,
+    color: Color,
   ) {
     super(engine, transform, layer)
     this.texture = {
@@ -25,6 +25,7 @@ export class DevPlayer extends GameObject {
     this.text = this.texture
     this.zIndex = 1
     this.collider = 'box'
+    this.transform.rotation = -0.75
   }
 
   earlyUpdate(): void {

@@ -1,8 +1,9 @@
-import { getPointDistance, getVertices } from '../collision/math-extensions'
+import { getVertices } from '../collision/math-extensions'
 import { CACHE_NAMES } from '../constants'
 import type { Engine } from '../engine'
 import type { GameObject, Transform, Vector2D } from '../types'
 import { Camera } from './camera'
+import { getRGB } from './textures'
 
 type RayCastHit = {
   object: GameObject
@@ -18,6 +19,9 @@ export class RayCastCamera extends Camera {
   private readonly height: number
 
   private readonly anchor: GameObject
+  private readonly fov = 60
+  private readonly fovRad = this.fov * (Math.PI / 180)
+  private readonly projectionPlaneDistance: number
 
   constructor(
     engine: Engine,
@@ -48,6 +52,8 @@ export class RayCastCamera extends Camera {
     this.uiLayer = this.createCanvas('ui-layer')
     this.uiLayer.style.zIndex = '1'
     this.parent.appendChild(this.uiLayer)
+
+    this.projectionPlaneDistance = this.height / 2 / Math.tan(this.fovRad / 2)
   }
 
   private createCanvas(id: string) {
@@ -61,30 +67,87 @@ export class RayCastCamera extends Camera {
   }
 
   paint() {
-    const objects = this.engine.getGameObjects(
+    let objects = this.engine.getGameObjects(
       CACHE_NAMES.IGNORE_PLAYER,
       (gameObjects) =>
-        gameObjects.filter((g) => g.objectId !== this.anchor.objectId),
+        gameObjects.filter(
+          (g) => g.objectId !== this.anchor.objectId && !!g.texture,
+        ),
     )
+
+    objects = this.filterObjects(objects)
     this.rayCast(objects)
   }
 
+  private filterObjects(gameObjects: GameObject[]) {
+    const rotation = this.anchor.transform.rotation
+    const camX = this.anchor.transform.x
+    const camY = this.anchor.transform.y
+    const halfFov = this.fovRad / 2
+    const maxDistance = this.engine.renderSize
+
+    return gameObjects.filter((object) => {
+      const vertices = getVertices(object)
+
+      let cx = 0
+      let cy = 0
+
+      for (const v of vertices) {
+        cx += v.x
+        cy += v.y
+      }
+
+      cx /= vertices.length
+      cy /= vertices.length
+
+      let radius = 0
+      for (const v of vertices) {
+        const d = Math.hypot(v.x - cx, v.y - cy)
+        if (d > radius) radius = d
+      }
+
+      const dx = cx - camX
+      const dy = cy - camY
+      const distance = Math.hypot(dx, dy)
+
+      if (distance - radius > maxDistance) return false // too far away
+
+      let relAngle = Math.atan2(dy, dx) - rotation
+      relAngle =
+        ((((relAngle + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) %
+          (2 * Math.PI)) -
+        Math.PI
+
+      const angularRadius =
+        distance > radius ? Math.asin(radius / distance) : Math.PI // camera is on/inside the object
+
+      return (
+        relAngle + angularRadius >= -halfFov &&
+        relAngle - angularRadius <= halfFov
+      )
+    })
+  }
+
   private rayCast(objects: GameObject[]) {
-    console.log('casting')
     const rays = this.width
     const sliceWidth = this.width / rays
-    const fov = 60
-    const fovRad = fov * (Math.PI / 180)
-    const angleStep = fovRad / rays // FOV
+    const angleStep = this.fovRad / rays // FOV
     const rotation = this.anchor.transform.rotation
     const ctx = this.gameLayer.getContext('2d')!
     ctx.clearRect(0, 0, this.width, this.height)
 
     for (let i = 0; i < rays; i++) {
-      const rayAngle = rotation - fovRad / 2 + i * angleStep
+      const rayAngle = rotation - this.fovRad / 2 + i * angleStep
       const result = this.castRay(rayAngle, objects)
       if (result) {
-        this.drawItem(i, result.wallHeight, sliceWidth, ctx)
+        this.drawItem(
+          i,
+          result.wallHeight,
+          sliceWidth,
+          ctx,
+          result.object,
+          result.distance,
+        )
       }
     }
   }
@@ -94,10 +157,23 @@ export class RayCastCamera extends Camera {
     wallHeight: number,
     sliceWidth: number,
     ctx: CanvasRenderingContext2D,
+    object: GameObject,
+    distance: number,
   ) {
+    if (!object.texture) return
+
+    const shade = 1 - distance / this.engine.renderSize
+
     const minY = Math.floor(this.height / 2 - wallHeight / 2)
-    ctx.fillStyle = `rgb(180, 0, 180)`
-    ctx.fillRect(i * sliceWidth, minY, sliceWidth, wallHeight)
+    if (
+      object.texture.type === 'rectangle' ||
+      object.texture.type === 'circle'
+    ) {
+      ctx.fillStyle = getRGB(object.texture.color, shade)
+      ctx.fillRect(i * sliceWidth, minY, sliceWidth, wallHeight)
+    } else if (object.texture.type === 'image') {
+      // Not supported yet
+    }
   }
 
   private castRay(rayAngle: number, gameObjects: GameObject[]) {
@@ -106,15 +182,10 @@ export class RayCastCamera extends Camera {
       y: this.anchor.transform.y,
     }
 
-    const endX = rayStart.x + this.engine.renderSize * Math.cos(rayAngle)
-    const endY = rayStart.y + this.engine.renderSize * Math.sin(rayAngle)
+    const dX = Math.cos(rayAngle)
+    const dY = Math.sin(rayAngle)
 
-    const rayEnd = {
-      x: endX,
-      y: endY,
-    }
-
-    const hits = this.getHits(rayStart, rayEnd, gameObjects)
+    const hits = this.getHits(rayStart, dX, dY, gameObjects)
     if (!hits.length) {
       return
     }
@@ -128,18 +199,17 @@ export class RayCastCamera extends Camera {
       }
     }
 
-    const fovRad = 60 * (Math.PI / 180)
-    const projectionPlaneDistance = this.height / 2 / Math.tan(fovRad / 2)
     const wallHeight =
-      (hit.object.transform.height * projectionPlaneDistance) /
+      (hit.object.transform.height * this.projectionPlaneDistance) /
       (hit.distance * Math.cos(rayAngle - this.anchor.transform.rotation))
 
-    return { distance: hit.distance, wallHeight }
+    return { distance: hit.distance, wallHeight, object: hit.object }
   }
 
   private getHits(
     rayStart: Vector2D,
-    rayEnd: Vector2D,
+    dX: number,
+    dY: number,
     gameObjects: GameObject[],
   ) {
     const hits: RayCastHit[] = []
@@ -154,7 +224,8 @@ export class RayCastCamera extends Camera {
 
         const point = this.getIntersectionPoint(
           rayStart,
-          rayEnd,
+          dX,
+          dY,
           vertexA,
           vertexB,
         )
@@ -183,32 +254,27 @@ export class RayCastCamera extends Camera {
 
   private getIntersectionPoint(
     rayStart: Vector2D,
-    rayEnd: Vector2D,
+    dX: number,
+    dY: number,
     edgeStart: Vector2D,
     edgeEnd: Vector2D,
   ) {
     // calculate the distance to intersection point
-    const uA =
-      ((edgeEnd.x - edgeStart.x) * (rayStart.y - edgeStart.y) -
-        (edgeEnd.y - edgeStart.y) * (rayStart.x - edgeStart.x)) /
-      ((edgeEnd.y - edgeStart.y) * (rayEnd.x - rayStart.x) -
-        (edgeEnd.x - edgeStart.x) * (rayEnd.y - rayStart.y))
-    const uB =
-      ((rayEnd.x - rayStart.x) * (rayStart.y - edgeStart.y) -
-        (rayEnd.y - rayStart.y) * (rayStart.x - edgeStart.x)) /
-      ((edgeEnd.y - edgeStart.y) * (rayEnd.x - rayStart.x) -
-        (edgeEnd.x - edgeStart.x) * (rayEnd.y - rayStart.y))
+    const ex = edgeEnd.x - edgeStart.x
+    const ey = edgeEnd.y - edgeStart.y
+    const den = ex * dY - ey * dX
+    const erX = edgeStart.x - rayStart.x
+    const erY = edgeStart.y - rayStart.y
 
-    // if uA and uB are between 0-1, lines are colliding
-    if (uA >= 0 && uA <= 1 && uB >= 0 && uB <= 1) {
-      const intersectionX = rayStart.x + uA * (rayEnd.x - rayStart.x)
-      const intersectionY = rayStart.y + uA * (rayEnd.y - rayStart.y)
-      const rayLength = getPointDistance(rayStart, rayEnd)
+    const uA = (ex * erY - ey * erX) / den
+    const uB = (dX * erY - dY * erX) / den
 
+    // // if uA and uB are between 0-1, lines are colliding
+    if (uA >= 0 && uB >= 0 && uB <= 1) {
       return {
-        distance: uA * rayLength,
-        x: intersectionX,
-        y: intersectionY,
+        distance: uA,
+        x: rayStart.x + uA * dX,
+        y: rayStart.y + uA * dY,
       }
     }
 
