@@ -32,7 +32,8 @@
     "vitest": "^4.1.8"
   },
   "dependencies": {
-    "@parkerstovall.com/pac-man-map-generator": "workspace:*"
+    "@parkerstovall.com/pac-man-map-generator": "workspace:*",
+    "@parkerstovall.com/game-engine": "workspace:*"
   },
   "prettier": {
     "singleQuote": true,

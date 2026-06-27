@@ -1,7 +1,6 @@
-import type { Collider } from './collision/colliders'
 import { type LAYER_KEYS } from './constants'
 import type { Engine } from './engine'
-import type { Texture } from './rendering/textures'
+import type { GameObject } from './game-object'
 
 export type Transform = {
   x: number
@@ -84,32 +83,4 @@ export class Chunk {
   setDirty() {
     this.objectsByLayer.clear()
   }
-}
-
-export abstract class GameObject {
-  public transform: Transform
-  public collider?: Collider
-  public texture?: Texture
-  public isActive: boolean = true
-  public tags: string[] = []
-  public zIndex: number = 0
-  public readonly objectId: string
-  public readonly layer: number
-
-  protected readonly engine: Engine
-
-  constructor(engine: Engine, position: Transform, layer: number) {
-    this.transform = position
-    this.engine = engine
-    this.objectId = crypto.randomUUID()
-    this.layer = layer
-  }
-
-  start?(): void
-  destroy?(): void
-  earlyUpdate?(): void
-  update?(): void
-  lateUpdate?(): void
-  onCollisionEnter?(gameObject: GameObject): void
-  onCollisionExit?(gameObject: GameObject): void
 }

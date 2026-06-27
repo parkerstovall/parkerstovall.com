@@ -1,13 +1,15 @@
+import { Directions } from '../constants'
 import type { Engine } from '../engine'
+import { GameObject } from '../game-object'
 import type { Color, Sprite } from '../rendering/textures'
-import { GameObject, type Transform } from '../types'
+import { type Transform } from '../types'
 
 export class DevPlayer extends GameObject {
   public tags: string[] = []
 
   private speedX: number = 125
   private speedY: number = 125
-  private speedAngle: number = 0.35
+  private speedAngle: number = 3
   private readonly text: Sprite
 
   constructor(
@@ -25,24 +27,23 @@ export class DevPlayer extends GameObject {
     this.text = this.texture
     this.zIndex = 1
     this.collider = 'box'
-    this.transform.rotation = -0.75
   }
 
   earlyUpdate(): void {
     if (this.engine.keyStrokeManager.pressedKeys.has('a')) {
-      this.transform.x -= this.speedX * this.engine.deltaTime
+      this.move(Directions.LEFT, this.speedX)
     }
 
     if (this.engine.keyStrokeManager.pressedKeys.has('d')) {
-      this.transform.x += this.speedX * this.engine.deltaTime
+      this.move(Directions.RIGHT, this.speedX)
     }
 
     if (this.engine.keyStrokeManager.pressedKeys.has('w')) {
-      this.transform.y -= this.speedY * this.engine.deltaTime
+      this.move(Directions.FORWARD, this.speedY)
     }
 
     if (this.engine.keyStrokeManager.pressedKeys.has('s')) {
-      this.transform.y += this.speedY * this.engine.deltaTime
+      this.move(Directions.BACK, this.speedY)
     }
 
     if (this.engine.keyStrokeManager.pressedKeys.has('q')) {

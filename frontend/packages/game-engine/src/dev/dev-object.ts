@@ -1,6 +1,7 @@
 import type { Engine } from '../engine'
+import { GameObject } from '../game-object'
 import type { Color } from '../rendering/textures'
-import { GameObject, type Transform } from '../types'
+import { type Transform } from '../types'
 
 export class DevObject extends GameObject {
   public tags: string[] = []

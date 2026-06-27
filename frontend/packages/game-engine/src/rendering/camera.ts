@@ -1,5 +1,6 @@
 import type { Engine } from '../engine'
-import { Chunk, GameObject, type Transform } from '../types'
+import { GameObject } from '../game-object'
+import { Chunk, type Transform } from '../types'
 
 export abstract class Camera extends GameObject {
   protected readonly parent: HTMLElement

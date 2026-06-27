@@ -1,6 +1,7 @@
 import { CACHE_NAMES, LAYERS } from '../constants'
 import type { Engine } from '../engine'
-import type { GameObject, Transform } from '../types'
+import type { GameObject } from '../game-object'
+import type { Transform } from '../types'
 import { Camera } from './camera'
 import { getRGB } from './textures'
 

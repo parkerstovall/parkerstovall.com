@@ -346,6 +346,9 @@ importers:
 
   packages/maze-game:
     dependencies:
+      '@parkerstovall.com/game-engine':
+        specifier: workspace:*
+        version: link:../game-engine
       '@parkerstovall.com/pac-man-map-generator':
         specifier: workspace:*
         version: link:../pac-man-map-generator

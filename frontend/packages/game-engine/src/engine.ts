@@ -1,9 +1,10 @@
-import type { CACHE_KEYS } from './constants'
-import { Chunk, GameObject, type Scene, type Vector2D } from './types'
+import { CACHE_NAMES, type CACHE_KEYS } from './constants'
+import { Chunk, type Scene, type Vector2D } from './types'
 import { CollisionManager } from './collision/collision-manager'
 import { KeystrokeManager } from './managers/keystroke-manager'
 import type { Camera } from './rendering/camera'
 import { getVertices } from './collision/math-extensions'
+import type { GameObject } from './game-object'
 
 export let frameNumber: number = 0
 
@@ -180,6 +181,9 @@ export class Engine {
     gameObjects = this.getActiveChunks()
       .map((c) => c.gameObjects)
       .flat()
+      .filter((value, index, self) => {
+        return self.findIndex((g) => g.objectId === value.objectId) === index
+      })
 
     gameObjects = func?.(gameObjects) ?? gameObjects
     this.gameObjectCache.set(cacheKey, gameObjects)
@@ -196,8 +200,7 @@ export class Engine {
     this.deltaTime = Math.min((frameStart - this.lastFrameStart) / 1000, 0.1)
     this.lastFrameStart = frameStart
 
-    const chunks = this.getActiveChunks()
-    const gameObjects = [...chunks].map((c) => c.gameObjects).flat()
+    const gameObjects = this.getGameObjects(CACHE_NAMES.BASIC)
 
     for (const gameObject of gameObjects) {
       gameObject.earlyUpdate?.()
@@ -228,10 +231,13 @@ export class Engine {
     }
 
     for (const camera of this.cameras) {
-      camera.paint(chunks)
+      camera.paint(this.getActiveChunks())
     }
 
-    this.collisionManager.detectChunkCollisions(chunks, this.renderSize)
+    this.collisionManager.detectChunkCollisions(
+      this.getActiveChunks(),
+      this.renderSize,
+    )
     requestAnimationFrame(() => this.update())
   }
 

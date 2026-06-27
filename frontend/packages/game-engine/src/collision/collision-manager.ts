@@ -1,5 +1,6 @@
 import { LAYERS } from '../constants'
-import { GameObject, type Chunk } from '../types'
+import type { GameObject } from '../game-object'
+import { type Chunk } from '../types'
 import { removeObjectFromMathCache } from './math-extensions'
 import { hasCollision } from './object-collisions'
 

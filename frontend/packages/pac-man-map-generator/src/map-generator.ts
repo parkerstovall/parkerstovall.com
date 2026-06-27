@@ -1,34 +1,14 @@
 import { MapBuilderManager } from './map-builder-manager'
-import { mapGeneratorOptionsSchema, type MapGeneratorOptions } from './options'
+import {
+  DefaultOptions,
+  mapGeneratorOptionsSchema,
+  type MapGeneratorOptions,
+} from './options'
 import { getRandomInt } from './shared'
 import type { Block, BlockMap, MapStats, PacManMap, Position } from './types'
 
 export function generateMap(
-  opts: MapGeneratorOptions = {
-    map: {
-      bounds: {
-        width: 28,
-        height: 31,
-      },
-      teleporter: {
-        min: 1,
-        max: 4,
-      },
-      path: {
-        min: 300,
-      },
-    },
-    mapMaker: {
-      manager: {
-        min: 6,
-        max: 10,
-      },
-      builder: {
-        minDistanceBeforeTurn: 4,
-        maxDistanceBeforeTurn: 12,
-      },
-    },
-  },
+  opts: MapGeneratorOptions = DefaultOptions,
 ): PacManMap {
   mapGeneratorOptionsSchema.parse(opts)
   const startTime = performance.now()

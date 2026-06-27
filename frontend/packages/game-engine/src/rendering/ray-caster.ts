@@ -1,7 +1,8 @@
 import { getVertices } from '../collision/math-extensions'
-import { CACHE_NAMES } from '../constants'
+import { CACHE_NAMES, LAYERS } from '../constants'
 import type { Engine } from '../engine'
-import type { GameObject, Transform, Vector2D } from '../types'
+import type { GameObject } from '../game-object'
+import type { Transform, Vector2D } from '../types'
 import { Camera } from './camera'
 import { getRGB } from './textures'
 
@@ -71,12 +72,65 @@ export class RayCastCamera extends Camera {
       CACHE_NAMES.IGNORE_PLAYER,
       (gameObjects) =>
         gameObjects.filter(
-          (g) => g.objectId !== this.anchor.objectId && !!g.texture,
+          (g) =>
+            g.objectId !== this.anchor.objectId &&
+            !!g.texture &&
+            g.layer === LAYERS.GAME_LAYER,
         ),
     )
 
+    const bgObjects = this.engine.getGameObjects(
+      CACHE_NAMES.BACKGROUND,
+      (gameObjects) =>
+        gameObjects.filter(
+          (g) => !!g.texture && g.layer === LAYERS.BACKGROUND_LAYER,
+        ),
+    )
+
+    const ctx = this.gameLayer.getContext('2d')!
+    ctx.clearRect(0, 0, this.width, this.height)
+
+    for (const object of bgObjects) {
+      this.drawSimpleItem(object, ctx)
+    }
+
     objects = this.filterObjects(objects)
     this.rayCast(objects)
+  }
+
+  private drawSimpleItem(object: GameObject, ctx: CanvasRenderingContext2D) {
+    const texture = object.texture!
+    const { x, y, width, height, rotation } = object.transform
+
+    if (rotation) {
+      ctx.save()
+      const centerX = x + width / 2
+      const centerY = y + height / 2
+      ctx.translate(centerX, centerY)
+      ctx.rotate(rotation)
+      ctx.translate(-centerX, -centerY)
+    }
+
+    switch (texture.type) {
+      case 'rectangle':
+        ctx.fillStyle = getRGB(texture.color)
+        ctx.fillRect(x, y, width, height)
+        break
+      case 'circle':
+        const centerX = x + width / 2
+        const centerY = y + height / 2
+        ctx.fillStyle = getRGB(texture.color)
+        ctx.beginPath()
+        ctx.arc(centerX, centerY, width / 2, 0, 2 * Math.PI)
+        ctx.fill()
+        break
+      case 'image':
+        ctx.drawImage(texture.image, x, y, width, height)
+    }
+
+    if (rotation) {
+      ctx.restore()
+    }
   }
 
   private filterObjects(gameObjects: GameObject[]) {
@@ -134,7 +188,6 @@ export class RayCastCamera extends Camera {
     const angleStep = this.fovRad / rays // FOV
     const rotation = this.anchor.transform.rotation
     const ctx = this.gameLayer.getContext('2d')!
-    ctx.clearRect(0, 0, this.width, this.height)
 
     for (let i = 0; i < rays; i++) {
       const rayAngle = rotation - this.fovRad / 2 + i * angleStep
