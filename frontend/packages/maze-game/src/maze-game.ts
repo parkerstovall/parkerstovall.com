@@ -2,7 +2,7 @@ import {
   Engine,
   LAYERS,
   RayCastCamera,
-  TwoDimensionalCamera,
+  //TwoDimensionalCamera,
   type Scene,
   type Transform,
 } from '@parkerstovall.com/game-engine'
@@ -163,24 +163,24 @@ export function MazeGameScene() {
         ),
       )
 
-      const maxWidth = map[0].length * size
-      const maxHeight = map.length * size
-      engine.addCamera(
-        new TwoDimensionalCamera(
-          engine,
-          {
-            x: playerPos.x,
-            y: playerPos.y,
-            width: 0,
-            height: 0,
-            rotation: 0,
-          },
-          LAYERS.UI_LAYER,
-          maxWidth,
-          maxHeight,
-          'game2',
-        ),
-      )
+      // const maxWidth = map[0].length * size
+      // const maxHeight = map.length * size
+      // engine.addCamera(
+      //   new TwoDimensionalCamera(
+      //     engine,
+      //     {
+      //       x: playerPos.x,
+      //       y: playerPos.y,
+      //       width: 0,
+      //       height: 0,
+      //       rotation: 0,
+      //     },
+      //     LAYERS.UI_LAYER,
+      //     maxWidth,
+      //     maxHeight,
+      //     'game2',
+      //   ),
+      // )
     },
   }
 
