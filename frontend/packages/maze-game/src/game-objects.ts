@@ -72,13 +72,17 @@ export class Player extends GameObject {
   }
 }
 
+const randomInt = (min: number, max: number) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
 export class Wall extends GameObject {
   public texture?: Texture = {
     type: 'rectangle',
     color: {
-      r: 175,
-      g: 175,
-      b: 175,
+      r: randomInt(0, 255),
+      g: randomInt(0, 255),
+      b: randomInt(0, 255),
     },
   }
 }

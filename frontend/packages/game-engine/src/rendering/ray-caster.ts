@@ -252,9 +252,16 @@ export class RayCastCamera extends Camera {
       }
     }
 
+    const MIN_DIST = 0.5 // tune to your world units
+    const correctedDistance = Math.max(
+      hit.distance * Math.cos(rayAngle - this.anchor.transform.rotation),
+      MIN_DIST,
+    )
+
+    const renderHeight =
+      hit.object.transform.renderHeight ?? hit.object.transform.height
     const wallHeight =
-      (hit.object.transform.height * this.projectionPlaneDistance) /
-      (hit.distance * Math.cos(rayAngle - this.anchor.transform.rotation))
+      (renderHeight * this.projectionPlaneDistance) / correctedDistance
 
     return { distance: hit.distance, wallHeight, object: hit.object }
   }

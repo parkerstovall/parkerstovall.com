@@ -2,7 +2,7 @@ import {
   Engine,
   LAYERS,
   RayCastCamera,
-  //TwoDimensionalCamera,
+  TwoDimensionalCamera,
   type Scene,
   type Transform,
 } from '@parkerstovall.com/game-engine'
@@ -11,6 +11,8 @@ import {
   generateMap,
 } from '@parkerstovall.com/pac-man-map-generator'
 import { Background, Player, Foreground, Wall } from './game-objects'
+import { BLOCK_SIZE, GAME_WIDTH, GAME_HEIGHT, PLAYER_SIZE } from './constants'
+import { getTransforms } from './get-transforms'
 
 const randomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min + 1)) + min
@@ -21,17 +23,9 @@ export function MazeGameScene() {
     name: 'Maze Game',
     load: (engine: Engine) => {
       engine.renderSize = 3000
-      const width = 1280
-      const height = 720
-      const size = 40
-      const playerSize = size / 4
       const teleCount = 6
-
-      const startIndexes = [1, 3, 5, 7, 9, 11]
-      const goalIndexes = [0, 2, 4, 6, 8, 10]
-      const playerStartIndex =
-        startIndexes[randomInt(0, startIndexes.length - 1)]
-      const playerGoalIndex = goalIndexes[randomInt(0, goalIndexes.length - 1)]
+      const playerStart = randomInt(0, teleCount - 1)
+      const playerGoal = randomInt(0, teleCount - 1)
 
       let foundTele = 0
       let playerX = 0
@@ -50,73 +44,80 @@ export function MazeGameScene() {
         },
       })
 
-      let currentStartX: number | null = null
-      let currentStartY: number | null = null
-      let currentLength = 1
-
-      const transforms: Transform[] = []
-
-      for (const col of map) {
-        currentStartX = null
-        currentStartY = null
-        currentLength = 1
-        for (const row of col) {
-          if (!row) continue
-
-          if (row.type === 'empty' || row.type === 'teleporter') {
-            let shouldCont = row.type === 'empty'
-
-            // type === teleporter
-            if (!shouldCont) {
-              foundTele++
-              if (!playerX) {
-                if (foundTele === playerStartIndex) {
-                  playerX = size * row.position.x - playerSize * 2
-                  playerY = size * (row.position.y + 0.5)
-                  shouldCont = true
-                }
-              } else if (!targetX) {
-                if (foundTele === playerGoalIndex) {
-                  targetX = size * row.position.x - playerSize * 2
-                  targetY = size * (row.position.y + 0.5)
-                  shouldCont = true
-                }
-              }
-            }
-
-            if (shouldCont) {
-              if (currentStartX !== null && currentStartY !== null) {
-                transforms.push({
-                  x: currentStartX * size,
-                  y: currentStartY * size,
-                  width: currentLength * size,
-                  height: size,
-                  rotation: 0,
-                })
-                currentStartX = null
-                currentStartY = null
-                currentLength = 1
-              }
-              continue
-            }
-          }
-
-          if (currentStartX === null) {
-            currentStartX = row.position.x
-            currentStartY = row.position.y
-          } else {
-            currentLength++
-          }
+      // Assemble Player Start
+      for (const row of map) {
+        const col = row[0]
+        if (col?.type !== 'teleporter') {
+          continue
         }
 
-        if (currentStartX !== null && currentStartY !== null) {
-          transforms.push({
-            x: currentStartX * size,
-            y: currentStartY * size,
-            width: currentLength * size,
-            height: size,
-            rotation: 0,
-          })
+        if (foundTele % teleCount === playerStart) {
+          playerX = col.position.x * BLOCK_SIZE
+          playerY = col.position.y * BLOCK_SIZE
+          col.type = 'empty'
+          break
+        }
+
+        foundTele++
+      }
+
+      foundTele = 0
+
+      // Assemble Player Goal
+      for (const row of map) {
+        const col = row[row.length - 1]
+        if (col?.type !== 'teleporter') {
+          continue
+        }
+
+        if (foundTele % teleCount === playerGoal) {
+          targetX = col.position.x * BLOCK_SIZE
+          targetY = col.position.y * BLOCK_SIZE
+          col.type = 'empty'
+          break
+        }
+
+        foundTele++
+      }
+
+      const detectSimpeBoxCollision = (
+        transformA: Transform,
+        transformB: Transform,
+      ) => {
+        if (transformA.x + transformA.width < transformB.x + 1) {
+          return false
+        }
+
+        if (transformA.x + 1 > transformB.x + transformB.width) {
+          return false
+        }
+
+        if (transformA.y + transformA.height < transformB.y + 1) {
+          return false
+        }
+
+        if (transformA.y + 1 > transformB.y + transformB.height) {
+          return false
+        }
+
+        console.log(transformA, transformB)
+        return true
+      }
+
+      const transforms = getTransforms(map)
+
+      for (let i = 0; i < transforms.length; i++) {
+        for (let j = 0; j < transforms.length; j++) {
+          if (j === i) {
+            continue
+          }
+
+          const t1 = transforms[i]
+          const t2 = transforms[j]
+
+          if (detectSimpeBoxCollision(t1, t2)) {
+            console.log('oopsie poopsie')
+          }
         }
       }
 
@@ -125,15 +126,15 @@ export function MazeGameScene() {
         engine.addObject(wall)
       }
 
-      engine.addObject(new Background(engine, width, height))
-      engine.addObject(new Foreground(engine, width, height))
+      engine.addObject(new Background(engine, GAME_WIDTH, GAME_HEIGHT))
+      engine.addObject(new Foreground(engine, GAME_WIDTH, GAME_HEIGHT))
 
       const playerPos: Transform = {
         rotation: 0,
-        x: playerX,
-        y: playerY,
-        width: playerSize,
-        height: playerSize,
+        x: playerX + BLOCK_SIZE / 2 - PLAYER_SIZE / 2,
+        y: playerY + BLOCK_SIZE / 2 - PLAYER_SIZE / 2,
+        width: PLAYER_SIZE,
+        height: PLAYER_SIZE,
       }
 
       const player = new Player(
@@ -156,31 +157,31 @@ export function MazeGameScene() {
             rotation: 0,
           },
           LAYERS.UI_LAYER,
-          width,
-          height,
+          GAME_WIDTH,
+          GAME_HEIGHT,
           'game',
           player,
         ),
       )
 
-      // const maxWidth = map[0].length * size
-      // const maxHeight = map.length * size
-      // engine.addCamera(
-      //   new TwoDimensionalCamera(
-      //     engine,
-      //     {
-      //       x: playerPos.x,
-      //       y: playerPos.y,
-      //       width: 0,
-      //       height: 0,
-      //       rotation: 0,
-      //     },
-      //     LAYERS.UI_LAYER,
-      //     maxWidth,
-      //     maxHeight,
-      //     'game2',
-      //   ),
-      // )
+      const maxWidth = map[0].length * BLOCK_SIZE
+      const maxHeight = map.length * BLOCK_SIZE
+      engine.addCamera(
+        new TwoDimensionalCamera(
+          engine,
+          {
+            x: playerPos.x,
+            y: playerPos.y,
+            width: 0,
+            height: 0,
+            rotation: 0,
+          },
+          LAYERS.UI_LAYER,
+          maxWidth,
+          maxHeight,
+          'game2',
+        ),
+      )
     },
   }
 

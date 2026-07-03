@@ -8,6 +8,7 @@ export type Transform = {
   width: number
   height: number
   rotation: number
+  renderHeight?: number
 }
 
 export type Vector2D = { x: number; y: number }
