@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "lint": "eslint ./src --fix",
+    "lint": "tsc && eslint ./src --fix",
     "build": "vite build",
     "test": "echo \"Make sure to write some tests!\"",
     "patch": "npm version patch --no-git-tag-version",
