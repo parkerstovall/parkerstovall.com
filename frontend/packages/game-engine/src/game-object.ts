@@ -1,4 +1,4 @@
-import type { Collider } from './collision/colliders'
+import type { Collider, CollisionInfo } from './collision/types'
 import { Directions, type Direction } from './constants'
 import type { Engine } from './engine'
 import type { Texture } from './rendering'
@@ -11,6 +11,7 @@ export abstract class GameObject {
   public isActive: boolean = true
   public tags: string[] = []
   public zIndex: number = 0
+  public static: boolean = false
   public readonly objectId: string
   public readonly layer: number
 
@@ -28,10 +29,34 @@ export abstract class GameObject {
   earlyUpdate?(): void
   update?(): void
   lateUpdate?(): void
-  onCollisionEnter?(gameObject: GameObject): void
+  onCollisionEnter?(gameObject: GameObject, collision: CollisionInfo): void
+  onCollisionStay?(gameObject: GameObject, collision: CollisionInfo): void
   onCollisionExit?(gameObject: GameObject): void
 
+  private static readonly COLLISION_PADDING = 0.5 // world units of guaranteed gap
+
+  resolveCollision(other: GameObject, info: CollisionInfo): void {
+    if (this.static) {
+      return
+    }
+
+    const correctionDepth = info.depth + GameObject.COLLISION_PADDING
+
+    if (other.static) {
+      this.transform.x += info.normal.x * correctionDepth
+      this.transform.y += info.normal.y * correctionDepth
+      return
+    }
+
+    this.transform.x += info.normal.x * correctionDepth * 0.5
+    this.transform.y += info.normal.y * correctionDepth * 0.5
+  }
+
   protected move(dir: Direction, speed: number) {
+    if (this.static) {
+      return
+    }
+
     if (!this.transform.rotation) {
       this.moveSimple(dir, speed)
     } else {

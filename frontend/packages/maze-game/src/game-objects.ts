@@ -1,29 +1,27 @@
 import {
-  Directions,
   Engine,
   GameObject,
   LAYERS,
+  Player,
+  type LAYER_KEYS,
   type Texture,
   type Transform,
 } from '@parkerstovall.com/game-engine'
 
-export class Player extends GameObject {
+export class MazePlayer extends Player {
   public tags: string[] = []
   public zIndex: number = 10
-
-  private speed: number = 75
-  private speedAngle: number = 1.25
   private readonly targetX: number
   private readonly targetY: number
 
   constructor(
     engine: Engine,
     transform: Transform,
-    layer: number,
+    layer: LAYER_KEYS,
     targetX: number,
     targetY: number,
   ) {
-    super(engine, transform, layer)
+    super(engine, transform, layer, 50, 1)
     this.zIndex = 1
     this.collider = 'box'
     this.targetX = targetX
@@ -39,30 +37,7 @@ export class Player extends GameObject {
   }
 
   earlyUpdate(): void {
-    if (this.engine.keyStrokeManager.pressedKeys.has('a')) {
-      this.move(Directions.LEFT, this.speed)
-    }
-
-    if (this.engine.keyStrokeManager.pressedKeys.has('d')) {
-      this.move(Directions.RIGHT, this.speed)
-    }
-
-    if (this.engine.keyStrokeManager.pressedKeys.has('w')) {
-      this.move(Directions.FORWARD, this.speed)
-    }
-
-    if (this.engine.keyStrokeManager.pressedKeys.has('s')) {
-      this.move(Directions.BACK, this.speed)
-    }
-
-    if (this.engine.keyStrokeManager.pressedKeys.has('q')) {
-      this.transform.rotation -= this.speedAngle * this.engine.deltaTime
-    }
-
-    if (this.engine.keyStrokeManager.pressedKeys.has('e')) {
-      this.transform.rotation += this.speedAngle * this.engine.deltaTime
-    }
-
+    super.earlyUpdate()
     if (
       Math.abs(this.targetX - this.transform.x) < 40 &&
       Math.abs(this.targetY - this.transform.y) < 40
@@ -77,6 +52,7 @@ const randomInt = (min: number, max: number) => {
 }
 
 export class Wall extends GameObject {
+  public static: boolean = true
   public texture?: Texture = {
     type: 'rectangle',
     color: {
@@ -84,6 +60,11 @@ export class Wall extends GameObject {
       g: randomInt(0, 255),
       b: randomInt(0, 255),
     },
+  }
+
+  constructor(engine: Engine, transform: Transform, layer: LAYER_KEYS) {
+    super(engine, transform, layer)
+    this.collider = 'box'
   }
 }
 

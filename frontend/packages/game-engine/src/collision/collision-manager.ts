@@ -64,21 +64,30 @@ export class CollisionManager {
     gameObjectA: GameObject,
     gameObjectB: GameObject,
   ) => {
-    const collided = hasCollision(gameObjectA, gameObjectB)
+    const collision = hasCollision(gameObjectA, gameObjectB)
 
     const cacheKey = this.getCacheKey(
       gameObjectA.objectId,
       gameObjectB.objectId,
     )
 
-    if (collided) {
+    if (collision.isColliding) {
+      const flipped = {
+        ...collision,
+        normal: { x: -collision.normal.x, y: -collision.normal.y },
+      }
+      gameObjectA.resolveCollision(gameObjectB, flipped)
+      gameObjectB.resolveCollision(gameObjectA, collision)
+
       if (this.currentCollisions.has(cacheKey)) {
+        gameObjectA.onCollisionStay?.(gameObjectB, collision)
+        gameObjectB.onCollisionStay?.(gameObjectA, collision)
         return
       }
 
       this.currentCollisions.add(cacheKey)
-      gameObjectA.onCollisionEnter?.(gameObjectB)
-      gameObjectB.onCollisionEnter?.(gameObjectA)
+      gameObjectA.onCollisionEnter?.(gameObjectB, collision)
+      gameObjectB.onCollisionEnter?.(gameObjectA, collision)
       return
     }
 

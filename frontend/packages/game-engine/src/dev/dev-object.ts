@@ -19,5 +19,6 @@ export class DevObject extends GameObject {
       color,
     }
     this.collider = 'box'
+    this.static = true
   }
 }

@@ -11,7 +11,7 @@ export const devScene: Scene = {
     const blue = engine.addPlayer(
       new DevPlayer(
         engine,
-        { x: 75, y: 100, height: 25, width: 25, rotation: 0 },
+        { x: 75, y: 100, height: 10, width: 10, rotation: 0 },
         LAYERS.GAME_LAYER,
         { r: 0, g: 100, b: 205 },
       ),
@@ -29,6 +29,36 @@ export const devScene: Scene = {
         },
         LAYERS.GAME_LAYER,
         { r: 50, g: 200, b: 125 },
+      ),
+    )
+
+    engine.addObject(
+      new DevObject(
+        engine,
+        {
+          x: 0,
+          y: 0,
+          width: 500,
+          height: 250,
+          rotation: 0,
+        },
+        LAYERS.BACKGROUND_LAYER,
+        { r: 205, g: 205, b: 205 },
+      ),
+    )
+
+    engine.addObject(
+      new DevObject(
+        engine,
+        {
+          x: 0,
+          y: 250,
+          width: 500,
+          height: 250,
+          rotation: 0,
+        },
+        LAYERS.BACKGROUND_LAYER,
+        { r: 25, g: 25, b: 25 },
       ),
     )
 

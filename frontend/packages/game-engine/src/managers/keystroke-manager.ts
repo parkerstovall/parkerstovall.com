@@ -1,5 +1,5 @@
 export class KeystrokeManager {
-  public readonly pressedKeys = new Set<string>()
+  private readonly pressedKeys = new Set<string>()
 
   constructor() {
     document.addEventListener('keypress', (e) => {
@@ -13,5 +13,9 @@ export class KeystrokeManager {
     document.addEventListener('keyup', (e) => {
       this.pressedKeys.delete(e.key.toLowerCase())
     })
+  }
+
+  has(...keys: string[]) {
+    return keys.some((k) => this.pressedKeys.has(k.toLowerCase()))
   }
 }

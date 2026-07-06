@@ -135,8 +135,8 @@ export class RayCastCamera extends Camera {
 
   private filterObjects(gameObjects: GameObject[]) {
     const rotation = this.anchor.transform.rotation
-    const camX = this.anchor.transform.x
-    const camY = this.anchor.transform.y
+    const camX = this.anchor.transform.x + this.anchor.transform.width / 2
+    const camY = this.anchor.transform.y + this.anchor.transform.height / 2
     const halfFov = this.fovRad / 2
     const maxDistance = this.engine.renderSize
 
@@ -231,8 +231,8 @@ export class RayCastCamera extends Camera {
 
   private castRay(rayAngle: number, gameObjects: GameObject[]) {
     const rayStart = {
-      x: this.anchor.transform.x,
-      y: this.anchor.transform.y,
+      x: this.anchor.transform.x + this.anchor.transform.width / 2,
+      y: this.anchor.transform.y + this.anchor.transform.width / 2,
     }
 
     const dX = Math.cos(rayAngle)

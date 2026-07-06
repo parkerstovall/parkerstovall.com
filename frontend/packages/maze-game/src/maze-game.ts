@@ -10,7 +10,7 @@ import {
   DefaultOptions,
   generateMap,
 } from '@parkerstovall.com/pac-man-map-generator'
-import { Background, Player, Foreground, Wall } from './game-objects'
+import { Background, MazePlayer, Foreground, Wall } from './game-objects'
 import { BLOCK_SIZE, GAME_WIDTH, GAME_HEIGHT, PLAYER_SIZE } from './constants'
 import { getTransforms } from './get-transforms'
 
@@ -137,7 +137,7 @@ export function MazeGameScene() {
         height: PLAYER_SIZE,
       }
 
-      const player = new Player(
+      const player = new MazePlayer(
         engine,
         playerPos,
         LAYERS.GAME_LAYER,

@@ -85,8 +85,21 @@ export const getPointInRectangle = (
   return totalArea <= rectArea
 }
 
-const getDotProduct = (vector1: Vector2D, vector2: Vector2D) => {
+export const getDotProduct = (vector1: Vector2D, vector2: Vector2D) => {
   return vector1.x * vector2.x + vector1.y * vector2.y
+}
+
+export const normalizeVector = (vector: Vector2D): Vector2D => {
+  const length = Math.sqrt(vector.x * vector.x + vector.y * vector.y)
+  if (length === 0) {
+    return { x: 0, y: 0 }
+  }
+  return { x: vector.x / length, y: vector.y / length }
+}
+
+export const getCenter = (gameObject: GameObject): Vector2D => {
+  const { x, y, width, height } = gameObject.transform
+  return { x: x + width / 2, y: y + height / 2 }
 }
 
 const getEdgeAxis = (vertexA: Vector2D, vertexB: Vector2D) => {
