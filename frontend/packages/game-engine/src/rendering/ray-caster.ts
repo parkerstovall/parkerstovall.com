@@ -4,7 +4,6 @@ import type { Engine } from '../engine'
 import type { GameObject } from '../game-object'
 import type { Transform, Vector2D } from '../types'
 import { Camera } from './camera'
-import { getRGB } from './textures'
 
 type RayCastHit = {
   object: GameObject
@@ -87,51 +86,54 @@ export class RayCastCamera extends Camera {
         ),
     )
 
-    const ctx = this.gameLayer.getContext('2d')!
-    ctx.clearRect(0, 0, this.width, this.height)
+    const ctx = this.gameLayer.getContext('2d')
+    if (ctx) {
+      ctx.clearRect(0, 0, this.width, this.height)
 
-    for (const object of bgObjects) {
-      this.drawSimpleItem(object, ctx)
+      for (const object of bgObjects) {
+        //this.drawSimpleItem(object, ctx)
+        object.texture?.paint2d?.(ctx)
+      }
     }
 
     objects = this.filterObjects(objects)
     this.rayCast(objects)
   }
 
-  private drawSimpleItem(object: GameObject, ctx: CanvasRenderingContext2D) {
-    const texture = object.texture!
-    const { x, y, width, height, rotation } = object.transform
+  //private drawSimpleItem(object: GameObject, ctx: CanvasRenderingContext2D) {
+  // const texture = object.texture!
+  // const { x, y, width, height, rotation } = object.transform
 
-    if (rotation) {
-      ctx.save()
-      const centerX = x + width / 2
-      const centerY = y + height / 2
-      ctx.translate(centerX, centerY)
-      ctx.rotate(rotation)
-      ctx.translate(-centerX, -centerY)
-    }
+  // if (rotation) {
+  //   ctx.save()
+  //   const centerX = x + width / 2
+  //   const centerY = y + height / 2
+  //   ctx.translate(centerX, centerY)
+  //   ctx.rotate(rotation)
+  //   ctx.translate(-centerX, -centerY)
+  // }
 
-    switch (texture.type) {
-      case 'rectangle':
-        ctx.fillStyle = getRGB(texture.color)
-        ctx.fillRect(x, y, width, height)
-        break
-      case 'circle':
-        const centerX = x + width / 2
-        const centerY = y + height / 2
-        ctx.fillStyle = getRGB(texture.color)
-        ctx.beginPath()
-        ctx.arc(centerX, centerY, width / 2, 0, 2 * Math.PI)
-        ctx.fill()
-        break
-      case 'image':
-        ctx.drawImage(texture.image, x, y, width, height)
-    }
+  // switch (texture.type) {
+  //   case 'rectangle':
+  //     ctx.fillStyle = getRGB(texture.color)
+  //     ctx.fillRect(x, y, width, height)
+  //     break
+  //   case 'circle':
+  //     const centerX = x + width / 2
+  //     const centerY = y + height / 2
+  //     ctx.fillStyle = getRGB(texture.color)
+  //     ctx.beginPath()
+  //     ctx.arc(centerX, centerY, width / 2, 0, 2 * Math.PI)
+  //     ctx.fill()
+  //     break
+  //   case 'image':
+  //     ctx.drawImage(texture.image, x, y, width, height)
+  // }
 
-    if (rotation) {
-      ctx.restore()
-    }
-  }
+  // if (rotation) {
+  //   ctx.restore()
+  // }
+  //}
 
   private filterObjects(gameObjects: GameObject[]) {
     const rotation = this.anchor.transform.rotation
@@ -213,20 +215,16 @@ export class RayCastCamera extends Camera {
     object: GameObject,
     distance: number,
   ) {
-    if (!object.texture) return
-
     const shade = 1 - distance / this.engine.renderSize
-
     const minY = Math.floor(this.height / 2 - wallHeight / 2)
-    if (
-      object.texture.type === 'rectangle' ||
-      object.texture.type === 'circle'
-    ) {
-      ctx.fillStyle = getRGB(object.texture.color, shade)
-      ctx.fillRect(i * sliceWidth, minY, sliceWidth, wallHeight)
-    } else if (object.texture.type === 'image') {
-      // Not supported yet
-    }
+
+    object.texture?.paintRay?.(ctx, shade, {
+      x: i * sliceWidth,
+      y: minY,
+      width: sliceWidth,
+      height: wallHeight,
+      rotation: 0,
+    })
   }
 
   private castRay(rayAngle: number, gameObjects: GameObject[]) {

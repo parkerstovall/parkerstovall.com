@@ -1,3 +1,6 @@
+import type { GameObject } from '../game-object'
+import type { Transform } from '../types'
+
 export type Color = {
   r: number
   g: number
@@ -25,4 +28,24 @@ export type Image = {
   image: CanvasImageSource
 }
 
-export type Texture = Image | Sprite
+//export type Texture = Image | Sprite
+
+export abstract class Texture {
+  protected readonly gameObject: GameObject
+
+  constructor(gameObject: GameObject) {
+    this.gameObject = gameObject
+  }
+
+  paint2d?(
+    ctx: CanvasRenderingContext2D,
+    offsetX?: number,
+    offsetY?: number,
+  ): void
+
+  paintRay?(
+    ctx: CanvasRenderingContext2D,
+    shade: number,
+    transform: Transform,
+  ): void
+}

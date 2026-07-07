@@ -3,7 +3,6 @@ import type { Engine } from '../engine'
 import type { GameObject } from '../game-object'
 import type { Transform } from '../types'
 import { Camera } from './camera'
-import { getRGB } from './textures'
 
 export class TwoDimensionalCamera extends Camera {
   private readonly backgroundLayer: HTMLCanvasElement
@@ -86,6 +85,11 @@ export class TwoDimensionalCamera extends Camera {
         continue
       }
 
+      //const texture = object.texture!
+      // const { x, y, width, height, rotation } = object.transform
+      // let drawX = x
+      // let drawY = y
+
       let ctx: CanvasRenderingContext2D
       if (object.layer === LAYERS.BACKGROUND_LAYER) {
         ctx = bgCtx
@@ -93,44 +97,43 @@ export class TwoDimensionalCamera extends Camera {
         ctx = uiCtx
       } else if (object.layer === LAYERS.GAME_LAYER) {
         ctx = gameCtx
+        // drawX = x - this.offsetX
+        // drawY = y - this.offsetY
       } else {
         continue
       }
 
-      const texture = object.texture!
-      const { x, y, width, height, rotation } = object.transform
-      const drawX = x - this.offsetX
-      const drawY = y - this.offsetY
+      object.texture?.paint2d?.(ctx, this.offsetX, this.offsetY)
 
-      if (rotation) {
-        ctx.save()
-        const centerX = drawX + width / 2
-        const centerY = drawY + height / 2
-        ctx.translate(centerX, centerY)
-        ctx.rotate(rotation)
-        ctx.translate(-centerX, -centerY)
-      }
+      // if (rotation) {
+      //   ctx.save()
+      //   const centerX = drawX + width / 2
+      //   const centerY = drawY + height / 2
+      //   ctx.translate(centerX, centerY)
+      //   ctx.rotate(rotation)
+      //   ctx.translate(-centerX, -centerY)
+      // }
 
-      switch (texture.type) {
-        case 'rectangle':
-          ctx.fillStyle = getRGB(texture.color)
-          ctx.fillRect(drawX, drawY, width, height)
-          break
-        case 'circle':
-          const centerX = drawX + width / 2
-          const centerY = drawY + height / 2
-          ctx.fillStyle = getRGB(texture.color)
-          ctx.beginPath()
-          ctx.arc(centerX, centerY, width / 2, 0, 2 * Math.PI)
-          ctx.fill()
-          break
-        case 'image':
-          ctx.drawImage(texture.image, drawX, drawY, width, height)
-      }
+      // switch (texture.type) {
+      //   case 'rectangle':
+      //     ctx.fillStyle = getRGB(texture.color)
+      //     ctx.fillRect(drawX, drawY, width, height)
+      //     break
+      //   case 'circle':
+      //     const centerX = drawX + width / 2
+      //     const centerY = drawY + height / 2
+      //     ctx.fillStyle = getRGB(texture.color)
+      //     ctx.beginPath()
+      //     ctx.arc(centerX, centerY, width / 2, 0, 2 * Math.PI)
+      //     ctx.fill()
+      //     break
+      //   case 'image':
+      //     ctx.drawImage(texture.image, drawX, drawY, width, height)
+      // }
 
-      if (rotation) {
-        ctx.restore()
-      }
+      // if (rotation) {
+      //   ctx.restore()
+      // }
     }
   }
 
