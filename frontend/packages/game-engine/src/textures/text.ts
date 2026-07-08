@@ -30,7 +30,6 @@ export class Text extends Texture {
   }
 
   paint2d(ctx: CanvasRenderingContext2D): void {
-    console.log(ctx)
     ctx.font = this.font
     ctx.textAlign = this.alignment
     ctx.textBaseline = 'top'

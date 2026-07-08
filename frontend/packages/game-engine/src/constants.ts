@@ -6,15 +6,6 @@ export const LAYERS = {
 
 export type LAYER_KEYS = (typeof LAYERS)[keyof typeof LAYERS]
 
-export const CACHE_NAMES = {
-  Z_INDEX_SORT: 0,
-  IGNORE_PLAYER: 1,
-  BACKGROUND: 2,
-  BASIC: 3,
-} as const
-
-export type CACHE_KEYS = (typeof CACHE_NAMES)[keyof typeof CACHE_NAMES]
-
 export const Directions = {
   LEFT: 0,
   RIGHT: 1,

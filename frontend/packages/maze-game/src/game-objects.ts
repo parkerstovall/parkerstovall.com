@@ -3,6 +3,7 @@ import {
   GameObject,
   LAYERS,
   Player,
+  RectangleSprite,
   type LAYER_KEYS,
   type Texture,
   type Transform,
@@ -26,14 +27,11 @@ export class MazePlayer extends Player {
     this.collider = 'box'
     this.targetX = targetX
     this.targetY = targetY
-    this.texture = {
-      type: 'rectangle',
-      color: {
-        r: 0,
-        g: 0,
-        b: 0,
-      },
-    }
+    this.texture = new RectangleSprite(this, {
+      r: 0,
+      g: 0,
+      b: 0,
+    })
   }
 
   earlyUpdate(): void {
@@ -53,14 +51,11 @@ const randomInt = (min: number, max: number) => {
 
 export class Wall extends GameObject {
   public static: boolean = true
-  public texture?: Texture = {
-    type: 'rectangle',
-    color: {
-      r: randomInt(0, 255),
-      g: randomInt(0, 255),
-      b: randomInt(0, 255),
-    },
-  }
+  public texture?: Texture = new RectangleSprite(this, {
+    r: randomInt(0, 255),
+    g: randomInt(0, 255),
+    b: randomInt(0, 255),
+  })
 
   constructor(engine: Engine, transform: Transform, layer: LAYER_KEYS) {
     super(engine, transform, layer)
@@ -69,14 +64,11 @@ export class Wall extends GameObject {
 }
 
 export class Background extends GameObject {
-  public texture?: Texture = {
-    type: 'rectangle',
-    color: {
-      r: 136,
-      g: 206,
-      b: 235,
-    },
-  }
+  public texture?: Texture = new RectangleSprite(this, {
+    r: 136,
+    g: 206,
+    b: 235,
+  })
 
   constructor(engine: Engine, width: number, height: number) {
     super(
@@ -88,14 +80,11 @@ export class Background extends GameObject {
 }
 
 export class Foreground extends GameObject {
-  public texture?: Texture = {
-    type: 'rectangle',
-    color: {
-      r: 100,
-      g: 100,
-      b: 100,
-    },
-  }
+  public texture?: Texture = new RectangleSprite(this, {
+    r: 100,
+    g: 100,
+    b: 100,
+  })
 
   constructor(engine: Engine, width: number, height: number) {
     super(

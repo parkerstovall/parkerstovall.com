@@ -4,7 +4,7 @@ import { DevObject } from './dev-object'
 import { DevPlayer } from './dev-player'
 import { RayCastCamera } from '../rendering/ray-caster'
 import { TwoDimensionalCamera } from '../rendering'
-import { TextObject } from '../implementations/text-object'
+import { TimerObject } from '../implementations/timer-object'
 
 export const devScene: Scene = {
   name: 'Dev Scene',
@@ -98,7 +98,7 @@ export const devScene: Scene = {
     )
 
     engine.addObject(
-      new TextObject(
+      new TimerObject(
         engine,
         {
           x: 10,
@@ -107,7 +107,9 @@ export const devScene: Scene = {
           height: 50,
           rotation: 0,
         },
-        'TEXT TESTING',
+        5,
+        () => console.log('DONE'),
+        'Time Remaining - ',
         { r: 0, g: 0, b: 0 },
         'left',
       ),

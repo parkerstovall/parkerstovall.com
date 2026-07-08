@@ -1,4 +1,3 @@
-import { CACHE_NAMES, type CACHE_KEYS } from './constants'
 import { Chunk, type Scene, type Vector2D } from './types'
 import { CollisionManager } from './collision/collision-manager'
 import { KeystrokeManager } from './managers/keystroke-manager'
@@ -11,7 +10,7 @@ export let frameNumber: number = 0
 export class Engine {
   private readonly playerIds = new Map<string, number>()
   private readonly objectIdToChunkMap = new Map<string, Set<number>>()
-  private readonly gameObjectCache = new Map<number, GameObject[]>()
+  private readonly gameObjectCache = new Map<string, GameObject[]>()
   private readonly chunks: Chunk[] = []
   private readonly players: GameObject[] = []
   private readonly cameras: Camera[] = []
@@ -170,7 +169,7 @@ export class Engine {
   }
 
   public getGameObjects(
-    cacheKey: CACHE_KEYS,
+    cacheKey: string,
     func?: (gameObjects: GameObject[]) => GameObject[],
   ) {
     let gameObjects = this.gameObjectCache.get(cacheKey)
@@ -200,7 +199,7 @@ export class Engine {
     this.deltaTime = Math.min((frameStart - this.lastFrameStart) / 1000, 0.1)
     this.lastFrameStart = frameStart
 
-    const gameObjects = this.getGameObjects(CACHE_NAMES.BASIC)
+    const gameObjects = this.getGameObjects('BasicEngineObjects')
 
     for (const gameObject of gameObjects) {
       gameObject.earlyUpdate?.()

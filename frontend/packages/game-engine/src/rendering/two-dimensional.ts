@@ -1,4 +1,4 @@
-import { CACHE_NAMES, LAYERS } from '../constants'
+import { LAYERS } from '../constants'
 import type { Engine } from '../engine'
 import type { GameObject } from '../game-object'
 import type { Transform } from '../types'
@@ -69,8 +69,11 @@ export class TwoDimensionalCamera extends Camera {
 
   paint() {
     const objects = this.engine.getGameObjects(
-      CACHE_NAMES.Z_INDEX_SORT,
-      (gameObjects) => [...gameObjects].sort((a, b) => a.zIndex - b.zIndex),
+      'ZIndex:ThisShouldPaint',
+      (gameObjects) =>
+        [...gameObjects]
+          .sort((a, b) => a.zIndex - b.zIndex)
+          .filter((o) => this.shouldPaint(o)),
     )
 
     const bgCtx = this.backgroundLayer.getContext('2d')!
@@ -81,10 +84,6 @@ export class TwoDimensionalCamera extends Camera {
     uiCtx.clearRect(0, 0, this.width, this.height)
 
     for (const object of objects) {
-      if (!this.shouldPaint(object)) {
-        continue
-      }
-
       if (object.layer === LAYERS.BACKGROUND_LAYER) {
         object.texture?.paint2d?.(bgCtx)
       } else if (object.layer === LAYERS.UI_LAYER) {
@@ -98,6 +97,10 @@ export class TwoDimensionalCamera extends Camera {
   private shouldPaint(gameObject: GameObject) {
     if (!gameObject.texture) {
       return false
+    }
+
+    if (gameObject.layer !== LAYERS.GAME_LAYER) {
+      return true
     }
 
     const { x, y, height, width } = gameObject.transform

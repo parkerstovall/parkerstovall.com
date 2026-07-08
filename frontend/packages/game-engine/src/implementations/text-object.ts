@@ -6,6 +6,8 @@ import { Text } from '../textures/text'
 import type { Transform } from '../types'
 
 export class TextObject extends GameObject {
+  public texture: Text
+
   constructor(
     engine: Engine,
     transform: Transform,

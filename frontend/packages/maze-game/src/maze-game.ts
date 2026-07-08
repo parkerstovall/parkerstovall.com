@@ -2,6 +2,7 @@ import {
   Engine,
   LAYERS,
   RayCastCamera,
+  TimerObject,
   TwoDimensionalCamera,
   type Scene,
   type Transform,
@@ -180,6 +181,20 @@ export function MazeGameScene() {
           maxWidth,
           maxHeight,
           'game2',
+        ),
+      )
+
+      const onComplete = () => {
+        console.log('TIME OUT')
+      }
+
+      engine.addObject(
+        new TimerObject(
+          engine,
+          { x: 15, y: 15, width: 1000, height: -1, rotation: 0 },
+          60,
+          onComplete,
+          'Time - ',
         ),
       )
     },

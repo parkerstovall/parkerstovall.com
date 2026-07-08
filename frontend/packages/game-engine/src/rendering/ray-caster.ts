@@ -1,5 +1,5 @@
 import { getVertices } from '../collision/math-extensions'
-import { CACHE_NAMES, LAYERS } from '../constants'
+import { LAYERS } from '../constants'
 import type { Engine } from '../engine'
 import type { GameObject } from '../game-object'
 import type { Transform, Vector2D } from '../types'
@@ -68,7 +68,7 @@ export class RayCastCamera extends Camera {
 
   paint() {
     let objects = this.engine.getGameObjects(
-      CACHE_NAMES.IGNORE_PLAYER,
+      `Ignore:${this.anchor.objectId}:OnlyGameLayer`,
       (gameObjects) =>
         gameObjects.filter(
           (g) =>
@@ -79,25 +79,39 @@ export class RayCastCamera extends Camera {
     )
 
     const bgObjects = this.engine.getGameObjects(
-      CACHE_NAMES.BACKGROUND,
+      'BackgroundObjectsWithTexture',
       (gameObjects) =>
         gameObjects.filter(
           (g) => !!g.texture && g.layer === LAYERS.BACKGROUND_LAYER,
         ),
     )
 
-    const ctx = this.gameLayer.getContext('2d')
-    if (ctx) {
-      ctx.clearRect(0, 0, this.width, this.height)
+    const bgCtx = this.backgroundLayer.getContext('2d')
+    if (bgCtx) {
+      bgCtx.clearRect(0, 0, this.width, this.height)
 
       for (const object of bgObjects) {
-        //this.drawSimpleItem(object, ctx)
-        object.texture?.paint2d?.(ctx)
+        object.texture?.paint2d?.(bgCtx)
       }
     }
 
     objects = this.filterObjects(objects)
     this.rayCast(objects)
+
+    const uiObjects = this.engine.getGameObjects(
+      'UIObjectsWithTexture',
+      (gameObjects) =>
+        gameObjects.filter((g) => !!g.texture && g.layer === LAYERS.UI_LAYER),
+    )
+
+    const uiCtx = this.uiLayer.getContext('2d')
+    if (uiCtx) {
+      uiCtx.clearRect(0, 0, this.width, this.height)
+
+      for (const object of uiObjects) {
+        object.texture?.paint2d?.(uiCtx)
+      }
+    }
   }
 
   private filterObjects(gameObjects: GameObject[]) {
@@ -155,6 +169,7 @@ export class RayCastCamera extends Camera {
     const angleStep = this.fovRad / rays // FOV
     const rotation = this.anchor.transform.rotation
     const ctx = this.gameLayer.getContext('2d')!
+    ctx.clearRect(0, 0, this.width, this.height)
 
     for (let i = 0; i < rays; i++) {
       const rayAngle = rotation - this.fovRad / 2 + i * angleStep
