@@ -25,9 +25,15 @@ export class Text extends Texture {
     this.text = text
   }
 
+  setColor(color: Color) {
+    this.color = color
+  }
+
   paint2d(ctx: CanvasRenderingContext2D): void {
+    console.log(ctx)
     ctx.font = this.font
     ctx.textAlign = this.alignment
+    ctx.textBaseline = 'top'
     ctx.fillStyle = getRGB(this.color)
     const { x, y, width } = this.gameObject.transform
     ctx.fillText(this.text, x, y, width)

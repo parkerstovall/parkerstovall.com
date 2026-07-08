@@ -18,18 +18,6 @@ export const getRGB = (color: Color, shade?: number) => {
   return `rgb(${r}, ${g}, ${b})`
 }
 
-export type Sprite = {
-  type: 'circle' | 'rectangle'
-  color: Color
-}
-
-export type Image = {
-  type: 'image'
-  image: CanvasImageSource
-}
-
-//export type Texture = Image | Sprite
-
 export abstract class Texture {
   protected readonly gameObject: GameObject
 

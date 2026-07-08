@@ -100,41 +100,6 @@ export class RayCastCamera extends Camera {
     this.rayCast(objects)
   }
 
-  //private drawSimpleItem(object: GameObject, ctx: CanvasRenderingContext2D) {
-  // const texture = object.texture!
-  // const { x, y, width, height, rotation } = object.transform
-
-  // if (rotation) {
-  //   ctx.save()
-  //   const centerX = x + width / 2
-  //   const centerY = y + height / 2
-  //   ctx.translate(centerX, centerY)
-  //   ctx.rotate(rotation)
-  //   ctx.translate(-centerX, -centerY)
-  // }
-
-  // switch (texture.type) {
-  //   case 'rectangle':
-  //     ctx.fillStyle = getRGB(texture.color)
-  //     ctx.fillRect(x, y, width, height)
-  //     break
-  //   case 'circle':
-  //     const centerX = x + width / 2
-  //     const centerY = y + height / 2
-  //     ctx.fillStyle = getRGB(texture.color)
-  //     ctx.beginPath()
-  //     ctx.arc(centerX, centerY, width / 2, 0, 2 * Math.PI)
-  //     ctx.fill()
-  //     break
-  //   case 'image':
-  //     ctx.drawImage(texture.image, x, y, width, height)
-  // }
-
-  // if (rotation) {
-  //   ctx.restore()
-  // }
-  //}
-
   private filterObjects(gameObjects: GameObject[]) {
     const rotation = this.anchor.transform.rotation
     const camX = this.anchor.transform.x + this.anchor.transform.width / 2

@@ -4,6 +4,7 @@ import { DevObject } from './dev-object'
 import { DevPlayer } from './dev-player'
 import { RayCastCamera } from '../rendering/ray-caster'
 import { TwoDimensionalCamera } from '../rendering'
+import { TextObject } from '../implementations/text-object'
 
 export const devScene: Scene = {
   name: 'Dev Scene',
@@ -93,6 +94,22 @@ export const devScene: Scene = {
         500,
         'game',
         blue,
+      ),
+    )
+
+    engine.addObject(
+      new TextObject(
+        engine,
+        {
+          x: 10,
+          y: 10,
+          width: 5000,
+          height: 50,
+          rotation: 0,
+        },
+        'TEXT TESTING',
+        { r: 0, g: 0, b: 0 },
+        'left',
       ),
     )
 

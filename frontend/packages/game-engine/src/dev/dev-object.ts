@@ -1,6 +1,7 @@
 import type { Engine } from '../engine'
 import { GameObject } from '../game-object'
-import type { Color } from '../rendering/textures'
+import { RectangleSprite } from '../textures/rectangle-sprite'
+import type { Color } from '../textures/textures'
 import { type Transform } from '../types'
 
 export class DevObject extends GameObject {
@@ -14,10 +15,7 @@ export class DevObject extends GameObject {
     color: Color,
   ) {
     super(engine, transform, layer)
-    this.texture = {
-      type: 'rectangle',
-      color,
-    }
+    this.texture = new RectangleSprite(this, color)
     this.collider = 'box'
     this.static = true
   }
