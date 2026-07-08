@@ -15,7 +15,7 @@ export class TextObject extends GameObject {
     font: string = '24px serif',
   ) {
     super(engine, transform, LAYERS.UI_LAYER)
-    this.texture = new Text(this, text, color)
+    this.texture = new Text(this, text, color, alignment, font)
     this.zIndex = 99999
   }
 }

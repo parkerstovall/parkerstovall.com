@@ -86,11 +86,11 @@ export class TwoDimensionalCamera extends Camera {
       }
 
       if (object.layer === LAYERS.BACKGROUND_LAYER) {
-        //object.texture?.paint2d?.(bgCtx)
+        object.texture?.paint2d?.(bgCtx)
       } else if (object.layer === LAYERS.UI_LAYER) {
         object.texture?.paint2d?.(uiCtx)
       } else if (object.layer === LAYERS.GAME_LAYER) {
-        //object.texture?.paint2d?.(gameCtx, this.offsetX, this.offsetY)
+        object.texture?.paint2d?.(gameCtx, this.offsetX, this.offsetY)
       }
     }
   }
