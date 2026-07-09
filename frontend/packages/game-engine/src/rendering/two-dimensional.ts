@@ -57,6 +57,8 @@ export class TwoDimensionalCamera extends Camera {
     canvas.height = this.height
     canvas.style.position = 'absolute'
     canvas.style.inset = '0'
+    canvas.style.width = '100%'
+    canvas.style.height = '100%'
     return canvas
   }
 

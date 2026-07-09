@@ -51,7 +51,8 @@ export class RayCastCamera extends Camera {
     this.uiLayer.style.zIndex = '2'
     this.parent.appendChild(this.uiLayer)
 
-    this.projectionPlaneDistance = this.height / 2 / Math.tan(this.fovRad / 2)
+    // Use viewport width for horizontal FOV projection.
+    this.projectionPlaneDistance = this.width / 2 / Math.tan(this.fovRad / 2)
   }
 
   private createCanvas(id: string) {
@@ -61,6 +62,8 @@ export class RayCastCamera extends Camera {
     canvas.height = this.height
     canvas.style.position = 'absolute'
     canvas.style.inset = '0'
+    canvas.style.width = '100%'
+    canvas.style.height = '100%'
     return canvas
   }
 
@@ -170,7 +173,8 @@ export class RayCastCamera extends Camera {
     ctx.clearRect(0, 0, this.width, this.height)
 
     for (let i = 0; i < rays; i++) {
-      const rayAngle = rotation - this.fovRad / 2 + i * angleStep
+      // Sample at the center of each vertical column to avoid half-column drift.
+      const rayAngle = rotation - this.fovRad / 2 + (i + 0.5) * angleStep
       const result = this.castRay(rayAngle, objects)
       if (result) {
         this.drawItem(
@@ -299,6 +303,9 @@ export class RayCastCamera extends Camera {
     const ex = edgeEnd.x - edgeStart.x
     const ey = edgeEnd.y - edgeStart.y
     const den = ex * dY - ey * dX
+    if (Math.abs(den) < 1e-9) {
+      return null
+    }
     const erX = edgeStart.x - rayStart.x
     const erY = edgeStart.y - rayStart.y
 
