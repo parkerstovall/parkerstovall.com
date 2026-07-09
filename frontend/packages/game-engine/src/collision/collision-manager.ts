@@ -7,6 +7,10 @@ import { hasCollision } from './object-collisions'
 export class CollisionManager {
   private readonly currentCollisions: Set<string> = new Set()
 
+  public reset() {
+    this.currentCollisions.clear()
+  }
+
   public removeGameObject = (objectId: string) => {
     removeObjectFromMathCache(objectId)
     this.currentCollisions.forEach((item) => {

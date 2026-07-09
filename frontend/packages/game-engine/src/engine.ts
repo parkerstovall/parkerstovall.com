@@ -28,18 +28,22 @@ export class Engine {
   constructor() {
     document.addEventListener('keydown', (event) => {
       if (event.key !== 'p') return
-
-      if (this.isPaused) {
-        this.isPaused = false
-        requestAnimationFrame(() => this.update())
-      } else {
-        this.isPaused = true
-      }
     })
+  }
+
+  public togglePause() {
+    if (this.isPaused) {
+      this.isPaused = false
+      this.lastFrameStart = performance.now()
+      requestAnimationFrame(() => this.update())
+    } else {
+      this.isPaused = true
+    }
   }
 
   public setScene(scene: Scene) {
     this.scene?.destroy?.()
+    this.reset()
     this.scene = scene
     this.scene.load(this)
 
@@ -149,6 +153,7 @@ export class Engine {
     }
 
     this.objectIdToChunkMap.set(gameObject.objectId, chunkIndexes)
+    this.setDirty()
     return gameObject
   }
 
@@ -321,5 +326,23 @@ export class Engine {
     const startX = Math.floor(x / this.renderSize) * this.renderSize
     const startY = Math.floor(y / this.renderSize) * this.renderSize
     return { x: startX, y: startY } as Vector2D
+  }
+
+  private reset() {
+    if (this.isPaused) {
+      this.togglePause()
+    }
+
+    this.setDirty()
+    for (const camera of this.cameras) {
+      camera.destroy()
+    }
+
+    this.playerIds.clear()
+    this.objectIdToChunkMap.clear()
+    this.chunks.splice(0, this.chunks.length)
+    this.players.splice(0, this.players.length)
+    this.cameras.splice(0, this.cameras.length)
+    this.collisionManager.reset()
   }
 }

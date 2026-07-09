@@ -1,5 +1,5 @@
 import { Sprite } from './sprite'
-import { getRGB } from './textures'
+import { getRGBA } from './textures'
 
 export class RectangleSprite extends Sprite {
   paint2d(
@@ -20,7 +20,7 @@ export class RectangleSprite extends Sprite {
       ctx.translate(-centerX, -centerY)
     }
 
-    ctx.fillStyle = getRGB(this.color)
+    ctx.fillStyle = getRGBA(this.color)
     ctx.fillRect(drawX, drawY, width, height)
 
     if (rotation) {

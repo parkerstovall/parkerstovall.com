@@ -318,4 +318,10 @@ export class RayCastCamera extends Camera {
 
     return null
   }
+
+  destroy() {
+    this.backgroundLayer.remove()
+    this.gameLayer.remove()
+    this.uiLayer.remove()
+  }
 }

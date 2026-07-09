@@ -122,4 +122,10 @@ export class TwoDimensionalCamera extends Camera {
 
     return true
   }
+
+  destroy() {
+    this.backgroundLayer.remove()
+    this.gameLayer.remove()
+    this.uiLayer.remove()
+  }
 }

@@ -22,4 +22,5 @@ export abstract class Camera extends GameObject {
   }
 
   abstract paint(chunks: Chunk[]): void
+  abstract destroy(): void
 }

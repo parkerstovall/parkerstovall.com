@@ -5,17 +5,24 @@ export type Color = {
   r: number
   g: number
   b: number
+  a?: number
 }
 
-export const getRGB = (color: Color, shade?: number) => {
+export const WHITE: Color = {
+  r: 255,
+  g: 255,
+  b: 255,
+} as const
+
+export const getRGBA = (color: Color, shade?: number) => {
   if (shade === undefined) {
-    return `rgb(${color.r}, ${color.g}, ${color.b})`
+    return `rgba(${color.r}, ${color.g}, ${color.b}, ${color.a ?? 1})`
   }
 
   const r = Math.floor(color.r * shade)
   const g = Math.floor(color.g * shade)
   const b = Math.floor(color.b * shade)
-  return `rgb(${r}, ${g}, ${b})`
+  return `rgba(${r}, ${g}, ${b}, ${color.a ?? 1})`
 }
 
 export abstract class Texture {

@@ -1,5 +1,5 @@
 import { Sprite } from './sprite'
-import { getRGB } from './textures'
+import { getRGBA } from './textures'
 
 export class CircleSprite extends Sprite {
   paint2d(
@@ -13,7 +13,7 @@ export class CircleSprite extends Sprite {
 
     const centerX = drawX + width / 2
     const centerY = drawY + height / 2
-    ctx.fillStyle = getRGB(this.color)
+    ctx.fillStyle = getRGBA(this.color)
     ctx.beginPath()
     ctx.arc(centerX, centerY, width / 2, 0, 2 * Math.PI)
     ctx.fill()

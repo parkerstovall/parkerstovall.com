@@ -1,5 +1,5 @@
 import type { GameObject } from '../game-object'
-import { getRGB, Texture, type Color } from '../rendering'
+import { getRGBA, Texture, type Color } from '../rendering'
 
 export class Text extends Texture {
   private text: string
@@ -33,7 +33,7 @@ export class Text extends Texture {
     ctx.font = this.font
     ctx.textAlign = this.alignment
     ctx.textBaseline = 'top'
-    ctx.fillStyle = getRGB(this.color)
+    ctx.fillStyle = getRGBA(this.color)
     const { x, y, width } = this.gameObject.transform
     ctx.fillText(this.text, x, y, width)
   }

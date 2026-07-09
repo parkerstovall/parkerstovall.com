@@ -4,10 +4,14 @@ import {
   LAYERS,
   Player,
   RectangleSprite,
+  TextObject,
+  WHITE,
+  type Color,
   type LAYER_KEYS,
   type Texture,
   type Transform,
 } from '@parkerstovall.com/game-engine'
+import { GAME_HEIGHT, GAME_WIDTH } from './constants'
 
 export class MazePlayer extends Player {
   public tags: string[] = []
@@ -34,13 +38,42 @@ export class MazePlayer extends Player {
     })
   }
 
+  private onWin() {
+    this.engine.addObject(
+      new Foreground(this.engine, {
+        r: 100,
+        g: 255,
+        b: 100,
+        a: 0.6,
+      }),
+    )
+
+    this.engine.addObject(
+      new TextObject(
+        this.engine,
+        {
+          x: GAME_WIDTH / 2 - 150,
+          y: GAME_HEIGHT / 2 - 24,
+          width: 300,
+          height: -1,
+          rotation: 0,
+        },
+        'You win! (r to restart)',
+        WHITE,
+        'center',
+      ),
+    )
+
+    this.engine.togglePause()
+  }
+
   earlyUpdate(): void {
     super.earlyUpdate()
     if (
       Math.abs(this.targetX - this.transform.x) < 40 &&
       Math.abs(this.targetY - this.transform.y) < 40
     ) {
-      console.log('WIN')
+      this.onWin()
     }
   }
 }
@@ -50,7 +83,7 @@ const randomInt = (min: number, max: number) => {
 }
 
 export class Wall extends GameObject {
-  public static: boolean = true
+  public isActive: boolean = true
   public texture?: Texture = new RectangleSprite(this, {
     r: randomInt(0, 255),
     g: randomInt(0, 255),
@@ -63,7 +96,22 @@ export class Wall extends GameObject {
   }
 }
 
+export class Foreground extends GameObject {
+  public isActive: boolean = true
+
+  constructor(engine: Engine, color: Color) {
+    super(
+      engine,
+      { x: 0, y: 0, width: GAME_WIDTH, height: GAME_HEIGHT, rotation: 0 },
+      LAYERS.UI_LAYER,
+    )
+
+    this.texture = new RectangleSprite(this, color)
+  }
+}
+
 export class Background extends GameObject {
+  public isActive: boolean = true
   public texture?: Texture = new RectangleSprite(this, {
     r: 136,
     g: 206,
@@ -79,7 +127,7 @@ export class Background extends GameObject {
   }
 }
 
-export class Foreground extends GameObject {
+export class SecondBackground extends GameObject {
   public texture?: Texture = new RectangleSprite(this, {
     r: 100,
     g: 100,

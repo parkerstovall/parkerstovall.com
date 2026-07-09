@@ -2,8 +2,9 @@ import {
   Engine,
   LAYERS,
   RayCastCamera,
+  TextObject,
   TimerObject,
-  TwoDimensionalCamera,
+  WHITE,
   type Scene,
   type Transform,
 } from '@parkerstovall.com/game-engine'
@@ -11,7 +12,13 @@ import {
   DefaultOptions,
   generateMap,
 } from '@parkerstovall.com/pac-man-map-generator'
-import { Background, MazePlayer, Foreground, Wall } from './game-objects'
+import {
+  Background,
+  MazePlayer,
+  SecondBackground,
+  Wall,
+  Foreground,
+} from './game-objects'
 import { BLOCK_SIZE, GAME_WIDTH, GAME_HEIGHT, PLAYER_SIZE } from './constants'
 import { getTransforms } from './get-transforms'
 
@@ -23,6 +30,35 @@ export function MazeGameScene() {
   const mazeGameScene: Scene = {
     name: 'Maze Game',
     load: (engine: Engine) => {
+      const onTime = () => {
+        engine.addObject(
+          new Foreground(engine, {
+            r: 255,
+            g: 0,
+            b: 0,
+            a: 0.6,
+          }),
+        )
+
+        engine.addObject(
+          new TextObject(
+            engine,
+            {
+              x: GAME_WIDTH / 2 - 150,
+              y: GAME_HEIGHT / 2 - 24,
+              width: 300,
+              height: -1,
+              rotation: 0,
+            },
+            'TOO LATE! (r to restart)',
+            WHITE,
+            'center',
+          ),
+        )
+
+        engine.togglePause()
+      }
+
       engine.renderSize = 3000
       const teleCount = 6
       const playerStart = randomInt(0, teleCount - 1)
@@ -101,34 +137,17 @@ export function MazeGameScene() {
           return false
         }
 
-        console.log(transformA, transformB)
         return true
       }
 
       const transforms = getTransforms(map)
-
-      for (let i = 0; i < transforms.length; i++) {
-        for (let j = 0; j < transforms.length; j++) {
-          if (j === i) {
-            continue
-          }
-
-          const t1 = transforms[i]
-          const t2 = transforms[j]
-
-          if (detectSimpeBoxCollision(t1, t2)) {
-            console.log('oopsie poopsie')
-          }
-        }
-      }
-
       for (const transform of transforms) {
         const wall = new Wall(engine, transform, LAYERS.GAME_LAYER)
         engine.addObject(wall)
       }
 
       engine.addObject(new Background(engine, GAME_WIDTH, GAME_HEIGHT))
-      engine.addObject(new Foreground(engine, GAME_WIDTH, GAME_HEIGHT))
+      engine.addObject(new SecondBackground(engine, GAME_WIDTH, GAME_HEIGHT))
 
       const playerPos: Transform = {
         rotation: 0,
@@ -165,35 +184,31 @@ export function MazeGameScene() {
         ),
       )
 
-      const maxWidth = map[0].length * BLOCK_SIZE
-      const maxHeight = map.length * BLOCK_SIZE
-      engine.addCamera(
-        new TwoDimensionalCamera(
-          engine,
-          {
-            x: playerPos.x,
-            y: playerPos.y,
-            width: 0,
-            height: 0,
-            rotation: 0,
-          },
-          LAYERS.UI_LAYER,
-          maxWidth,
-          maxHeight,
-          'game2',
-        ),
-      )
-
-      const onComplete = () => {
-        console.log('TIME OUT')
-      }
+      // const maxWidth = map[0].length * BLOCK_SIZE
+      // const maxHeight = map.length * BLOCK_SIZE
+      // engine.addCamera(
+      //   new TwoDimensionalCamera(
+      //     engine,
+      //     {
+      //       x: playerPos.x,
+      //       y: playerPos.y,
+      //       width: 0,
+      //       height: 0,
+      //       rotation: 0,
+      //     },
+      //     LAYERS.UI_LAYER,
+      //     maxWidth,
+      //     maxHeight,
+      //     'game2',
+      //   ),
+      // )
 
       engine.addObject(
         new TimerObject(
           engine,
           { x: 15, y: 15, width: 1000, height: -1, rotation: 0 },
           60,
-          onComplete,
+          onTime,
           'Time - ',
         ),
       )
@@ -202,4 +217,10 @@ export function MazeGameScene() {
 
   const engine = new Engine()
   engine.setScene(mazeGameScene)
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'r') {
+      engine.setScene(mazeGameScene)
+    }
+  })
 }
