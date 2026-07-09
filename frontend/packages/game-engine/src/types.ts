@@ -64,6 +64,7 @@ export class Chunk {
     }
 
     if (this.gameObjects.length === 1) {
+      this.setDirty()
       this.gameObjects.splice(0, 1)
       return
     }

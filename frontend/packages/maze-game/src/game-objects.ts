@@ -11,7 +11,7 @@ import {
   type Texture,
   type Transform,
 } from '@parkerstovall.com/game-engine'
-import { GAME_HEIGHT, GAME_WIDTH } from './constants'
+import { BLOCK_SIZE, GAME_HEIGHT, GAME_WIDTH } from './constants'
 
 export class MazePlayer extends Player {
   public tags: string[] = []
@@ -70,8 +70,8 @@ export class MazePlayer extends Player {
   earlyUpdate(): void {
     super.earlyUpdate()
     if (
-      Math.abs(this.targetX - this.transform.x) < 40 &&
-      Math.abs(this.targetY - this.transform.y) < 40
+      Math.abs(this.targetX - this.transform.x) < BLOCK_SIZE / 2 &&
+      Math.abs(this.targetY - this.transform.y) < BLOCK_SIZE / 2
     ) {
       this.onWin()
     }
@@ -83,7 +83,7 @@ const randomInt = (min: number, max: number) => {
 }
 
 export class Wall extends GameObject {
-  public isActive: boolean = true
+  public static: boolean = true
   public texture?: Texture = new RectangleSprite(this, {
     r: randomInt(0, 255),
     g: randomInt(0, 255),
@@ -97,7 +97,7 @@ export class Wall extends GameObject {
 }
 
 export class Foreground extends GameObject {
-  public isActive: boolean = true
+  public static: boolean = true
 
   constructor(engine: Engine, color: Color) {
     super(
@@ -111,7 +111,7 @@ export class Foreground extends GameObject {
 }
 
 export class Background extends GameObject {
-  public isActive: boolean = true
+  public static: boolean = true
   public texture?: Texture = new RectangleSprite(this, {
     r: 136,
     g: 206,

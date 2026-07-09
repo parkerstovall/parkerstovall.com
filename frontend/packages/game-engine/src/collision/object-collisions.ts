@@ -34,10 +34,11 @@ export const hasCollision = (
   }
 
   // rect = B, circle = A -> function's normal reads as B->A, so flip it to A->B
-  const result = detectCircleBoxCollision(gameObjectA, gameObjectB)
+  const result = detectCircleBoxCollision(gameObjectB, gameObjectA)
   if (!result.isColliding) {
     return result
   }
+
   return {
     ...result,
     normal: { x: -result.normal.x, y: -result.normal.y },

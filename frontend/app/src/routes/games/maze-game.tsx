@@ -28,13 +28,15 @@ function MazeGame() {
           Maze Game
         </h1>
         <p className="section-text" style={{ marginBottom: '1rem' }}>
-          Reach the target before the timer runs out.
+          Reach the target before the timer runs out. WASD to move, 'Q' to turn
+          left, 'E' to turn right
         </p>
         <div
           id="game"
           style={{
             margin: '0 auto',
-            width: 'fit-content',
+            width: '100%',
+            paddingTop: '62.5%',
             border: '1px solid rgba(16, 32, 54, 0.15)',
             borderRadius: '12px',
             overflow: 'hidden',

@@ -2,7 +2,7 @@ import { Chunk, type Scene, type Vector2D } from './types'
 import { CollisionManager } from './collision/collision-manager'
 import { KeystrokeManager } from './managers/keystroke-manager'
 import type { Camera } from './rendering/camera'
-import { getVertices } from './collision/math-extensions'
+import { clearMathCache, getVertices } from './collision/math-extensions'
 import type { GameObject } from './game-object'
 
 export let frameNumber: number = 0
@@ -27,7 +27,9 @@ export class Engine {
 
   constructor() {
     document.addEventListener('keydown', (event) => {
-      if (event.key !== 'p') return
+      if (event.key === 'p') {
+        this.togglePause()
+      }
     })
   }
 
@@ -70,7 +72,7 @@ export class Engine {
   public removePlayer(gameObject: GameObject) {
     const index = this.playerIds.get(gameObject.objectId)
 
-    if (index) {
+    if (index !== undefined) {
       const player = this.players.splice(index, 1)[0]
       this.playerIds.delete(player.objectId)
       return this.removeObject(player)
@@ -344,5 +346,7 @@ export class Engine {
     this.players.splice(0, this.players.length)
     this.cameras.splice(0, this.cameras.length)
     this.collisionManager.reset()
+    clearMathCache()
+    frameNumber = 0
   }
 }

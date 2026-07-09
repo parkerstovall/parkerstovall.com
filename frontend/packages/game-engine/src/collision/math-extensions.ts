@@ -9,6 +9,10 @@ type VertexCacheItem = {
 
 const vectorCache: Map<string, VertexCacheItem> = new Map()
 
+export const clearMathCache = () => {
+  vectorCache.clear()
+}
+
 export const removeObjectFromMathCache = (objectId: string) => {
   vectorCache.delete(objectId)
 }
