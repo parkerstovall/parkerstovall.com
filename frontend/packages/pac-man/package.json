@@ -10,8 +10,8 @@
   },
   "scripts": {
     "dev": "vite",
+    "lint": "tsc && eslint ./src --fix",
     "build": "vite build",
-    "lint": "eslint ./src --fix",
     "test": "vitest run",
     "patch": "npm version patch --no-git-tag-version"
   },

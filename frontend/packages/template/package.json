@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "lint": "eslint ./src --fix",
+    "lint": "tsc && eslint ./src --fix",
     "build": "vite build",
     "test": "echo \"Make sure to write some tests!\"",
     "patch": "npm version patch --no-git-tag-version",
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "@eslint/markdown": "^8.0.2",
+    "@microsoft/api-extractor": "^7.58.7",
     "@typescript-eslint/eslint-plugin": "^8.60.1",
     "@typescript-eslint/parser": "^8.60.1",
     "eslint": "^10.4.1",

@@ -14,7 +14,12 @@ vi.mock('@parkerstovall.com/pac-man', () => ({
   PacMan: () => <div data-testid="pac-man-component">Pac-Man Component</div>,
 }))
 
+vi.mock('@parkerstovall.com/maze-game', () => ({
+  MazeGameScene: vi.fn(),
+}))
+
 import { startMustachio } from '@parkerstovall.com/mustachio'
+import { MazeGameScene } from '@parkerstovall.com/maze-game'
 import { routeTree } from '../routeTree.gen'
 
 function renderAt(pathname: string) {
@@ -39,6 +44,7 @@ describe('app routes', () => {
     expect(await screen.findByText('Parker Stovall')).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Mustachio' })).toBeTruthy()
     expect(screen.getByRole('link', { name: 'Pac-Man' })).toBeTruthy()
+    expect(screen.getByRole('link', { name: 'Maze Game' })).toBeTruthy()
   })
 
   it('renders pac-man route with pac-man wrapper component', async () => {
@@ -53,6 +59,15 @@ describe('app routes', () => {
     expect(await screen.findByText('Mustachio')).toBeTruthy()
     await waitFor(() => {
       expect(startMustachio).toHaveBeenCalledWith('game-container')
+    })
+  })
+
+  it('renders maze-game route and calls MazeGameScene', async () => {
+    renderAt('/games/maze-game')
+
+    expect(await screen.findByText('Maze Game')).toBeTruthy()
+    await waitFor(() => {
+      expect(MazeGameScene).toHaveBeenCalled()
     })
   })
 })
