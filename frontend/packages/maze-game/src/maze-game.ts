@@ -117,29 +117,6 @@ export function MazeGameScene() {
         foundTele++
       }
 
-      const detectSimpeBoxCollision = (
-        transformA: Transform,
-        transformB: Transform,
-      ) => {
-        if (transformA.x + transformA.width < transformB.x + 1) {
-          return false
-        }
-
-        if (transformA.x + 1 > transformB.x + transformB.width) {
-          return false
-        }
-
-        if (transformA.y + transformA.height < transformB.y + 1) {
-          return false
-        }
-
-        if (transformA.y + 1 > transformB.y + transformB.height) {
-          return false
-        }
-
-        return true
-      }
-
       const transforms = getTransforms(map)
       for (const transform of transforms) {
         const wall = new Wall(engine, transform, LAYERS.GAME_LAYER)

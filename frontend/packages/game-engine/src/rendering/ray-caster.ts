@@ -42,15 +42,15 @@ export class RayCastCamera extends Camera {
     this.anchor = anchor
 
     this.backgroundLayer = this.createCanvas('background-layer')
-    this.backgroundLayer.style.zIndex = '-1'
+    this.backgroundLayer.style.zIndex = '0'
     this.parent.appendChild(this.backgroundLayer)
 
     this.gameLayer = this.createCanvas('game-layer')
-    this.gameLayer.style.zIndex = '0'
+    this.gameLayer.style.zIndex = '1'
     this.parent.appendChild(this.gameLayer)
 
     this.uiLayer = this.createCanvas('ui-layer')
-    this.uiLayer.style.zIndex = '1'
+    this.uiLayer.style.zIndex = '2'
     this.parent.appendChild(this.uiLayer)
 
     this.projectionPlaneDistance = this.height / 2 / Math.tan(this.fovRad / 2)

@@ -43,6 +43,17 @@ function App() {
                 controls.
               </p>
             </Link>
+            <Link
+              className="home-game-card"
+              to="/games/maze-game"
+              aria-label="Maze Game"
+            >
+              <h3>Maze Game</h3>
+              <p>
+                Race the clock through a randomized maze and find your goal
+                before time expires.
+              </p>
+            </Link>
           </nav>
           <span className="home-pill">New builds land here first</span>
         </aside>

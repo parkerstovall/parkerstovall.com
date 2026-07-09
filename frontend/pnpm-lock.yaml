@@ -231,6 +231,9 @@ importers:
 
   app:
     dependencies:
+      '@parkerstovall.com/maze-game':
+        specifier: workspace:*
+        version: link:../packages/maze-game
       '@parkerstovall.com/mustachio':
         specifier: workspace:*
         version: link:../packages/mustachio

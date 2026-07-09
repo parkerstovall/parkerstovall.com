@@ -11,6 +11,7 @@
     "copy:404": "cpy 'dist/index.html' '.' --rename=404.html"
   },
   "dependencies": {
+    "@parkerstovall.com/maze-game": "workspace:*",
     "@parkerstovall.com/mustachio": "workspace:*",
     "@parkerstovall.com/pac-man": "workspace:*",
     "@tanstack/react-router": "^1.170.12",
