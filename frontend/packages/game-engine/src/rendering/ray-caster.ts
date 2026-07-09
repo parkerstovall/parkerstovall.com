@@ -36,8 +36,6 @@ export class RayCastCamera extends Camera {
 
     this.width = width
     this.height = height
-    this.parent.style.width = width + 'px'
-    this.parent.style.height = height + 'px'
     this.parent.style.position = 'relative'
     this.anchor = anchor
 
@@ -210,7 +208,7 @@ export class RayCastCamera extends Camera {
   private castRay(rayAngle: number, gameObjects: GameObject[]) {
     const rayStart = {
       x: this.anchor.transform.x + this.anchor.transform.width / 2,
-      y: this.anchor.transform.y + this.anchor.transform.width / 2,
+      y: this.anchor.transform.y + this.anchor.transform.height / 2,
     }
 
     const dX = Math.cos(rayAngle)

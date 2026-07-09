@@ -2,7 +2,7 @@ export class KeystrokeManager {
   private readonly pressedKeys = new Set<string>()
 
   constructor() {
-    document.addEventListener('keypress', (e) => {
+    document.addEventListener('keydown', (e) => {
       if (e.repeat) {
         return
       }
