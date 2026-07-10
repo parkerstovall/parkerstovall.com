@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as UtilitiesQrCodeGeneratorRouteImport } from './routes/utilities/qr-code-generator'
 import { Route as GamesPacManRouteImport } from './routes/games/pac-man'
 import { Route as GamesMustachioRouteImport } from './routes/games/mustachio'
 import { Route as GamesMazeGameRouteImport } from './routes/games/maze-game'
@@ -19,6 +20,12 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const UtilitiesQrCodeGeneratorRoute =
+  UtilitiesQrCodeGeneratorRouteImport.update({
+    id: '/utilities/qr-code-generator',
+    path: '/utilities/qr-code-generator',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const GamesPacManRoute = GamesPacManRouteImport.update({
   id: '/games/pac-man',
   path: '/games/pac-man',
@@ -40,12 +47,14 @@ export interface FileRoutesByFullPath {
   '/games/maze-game': typeof GamesMazeGameRoute
   '/games/mustachio': typeof GamesMustachioRoute
   '/games/pac-man': typeof GamesPacManRoute
+  '/utilities/qr-code-generator': typeof UtilitiesQrCodeGeneratorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/games/maze-game': typeof GamesMazeGameRoute
   '/games/mustachio': typeof GamesMustachioRoute
   '/games/pac-man': typeof GamesPacManRoute
+  '/utilities/qr-code-generator': typeof UtilitiesQrCodeGeneratorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,18 +62,30 @@ export interface FileRoutesById {
   '/games/maze-game': typeof GamesMazeGameRoute
   '/games/mustachio': typeof GamesMustachioRoute
   '/games/pac-man': typeof GamesPacManRoute
+  '/utilities/qr-code-generator': typeof UtilitiesQrCodeGeneratorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/games/maze-game' | '/games/mustachio' | '/games/pac-man'
+  fullPaths:
+    | '/'
+    | '/games/maze-game'
+    | '/games/mustachio'
+    | '/games/pac-man'
+    | '/utilities/qr-code-generator'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/games/maze-game' | '/games/mustachio' | '/games/pac-man'
+  to:
+    | '/'
+    | '/games/maze-game'
+    | '/games/mustachio'
+    | '/games/pac-man'
+    | '/utilities/qr-code-generator'
   id:
     | '__root__'
     | '/'
     | '/games/maze-game'
     | '/games/mustachio'
     | '/games/pac-man'
+    | '/utilities/qr-code-generator'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -72,6 +93,7 @@ export interface RootRouteChildren {
   GamesMazeGameRoute: typeof GamesMazeGameRoute
   GamesMustachioRoute: typeof GamesMustachioRoute
   GamesPacManRoute: typeof GamesPacManRoute
+  UtilitiesQrCodeGeneratorRoute: typeof UtilitiesQrCodeGeneratorRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -81,6 +103,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/utilities/qr-code-generator': {
+      id: '/utilities/qr-code-generator'
+      path: '/utilities/qr-code-generator'
+      fullPath: '/utilities/qr-code-generator'
+      preLoaderRoute: typeof UtilitiesQrCodeGeneratorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/games/pac-man': {
@@ -112,6 +141,7 @@ const rootRouteChildren: RootRouteChildren = {
   GamesMazeGameRoute: GamesMazeGameRoute,
   GamesMustachioRoute: GamesMustachioRoute,
   GamesPacManRoute: GamesPacManRoute,
+  UtilitiesQrCodeGeneratorRoute: UtilitiesQrCodeGeneratorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
