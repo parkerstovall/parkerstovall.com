@@ -11,7 +11,12 @@ type RayCastHit = {
   distance: number
 }
 
-type CorrectedHit = { distance: number; wallHeight: number; object: GameObject }
+type CorrectedHit = {
+  distance: number
+  wallHeight: number
+  object: GameObject
+  offsetY: number
+}
 
 export class RayCastCamera extends Camera {
   private readonly backgroundLayer: HTMLCanvasElement
@@ -24,6 +29,7 @@ export class RayCastCamera extends Camera {
   private readonly fov = 60
   private readonly fovRad = this.fov * (Math.PI / 180)
   private readonly projectionPlaneDistance: number
+  private readonly wallRenderHeight: number
 
   constructor(
     engine: Engine,
@@ -33,6 +39,7 @@ export class RayCastCamera extends Camera {
     height: number,
     parentId: string,
     anchor: GameObject,
+    wallRenderHeight: number,
   ) {
     super(engine, position, layer, parentId)
 
@@ -40,6 +47,7 @@ export class RayCastCamera extends Camera {
     this.height = height
     this.parent.style.position = 'relative'
     this.anchor = anchor
+    this.wallRenderHeight = wallRenderHeight
 
     this.backgroundLayer = this.createCanvas('background-layer')
     this.backgroundLayer.style.zIndex = '0'
@@ -178,14 +186,15 @@ export class RayCastCamera extends Camera {
       // Sample at the center of each vertical column to avoid half-column drift.
       const rayAngle = rotation - this.fovRad / 2 + (i + 0.5) * angleStep
       const results = this.castRay(rayAngle, objects)
-      for (const result of results) {
+      for (let j = results.length - 1; j >= 0; j--) {
         this.drawItem(
           i,
-          result.wallHeight,
+          results[j].wallHeight,
           sliceWidth,
           ctx,
-          result.object,
-          result.distance,
+          results[j].object,
+          results[j].distance,
+          results[j].offsetY,
         )
       }
     }
@@ -198,13 +207,14 @@ export class RayCastCamera extends Camera {
     ctx: CanvasRenderingContext2D,
     object: GameObject,
     distance: number,
+    offsetY: number,
   ) {
     const shade = 1 - distance / this.engine.renderSize
     const minY = Math.floor(this.height / 2 - wallHeight / 2)
 
     object.texture?.paintRay?.(ctx, shade, {
       x: i * sliceWidth,
-      y: minY,
+      y: minY + offsetY,
       width: sliceWidth,
       height: wallHeight,
       rotation: 0,
@@ -242,15 +252,32 @@ export class RayCastCamera extends Camera {
       const wallHeight =
         (renderHeight * this.projectionPlaneDistance) / correctedDistance
 
-      retHits.push({ distance: hit.distance, wallHeight, object: hit.object })
-
       // Stop the raycast
       if (hit.object.tags.includes('wall')) {
+        retHits.push({
+          distance: hit.distance,
+          wallHeight,
+          object: hit.object,
+          offsetY: 0,
+        })
         break
+      } else {
+        const groundWallHeight =
+          (this.wallRenderHeight * this.projectionPlaneDistance) /
+          correctedDistance
+
+        const offsetY = (groundWallHeight - wallHeight) / 2
+
+        retHits.push({
+          distance: hit.distance,
+          wallHeight,
+          object: hit.object,
+          offsetY,
+        })
       }
     }
 
-    return retHits.reverse()
+    return retHits
   }
 
   private getHits(

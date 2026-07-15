@@ -114,6 +114,7 @@ export function MazeGameScene() {
           GAME_HEIGHT,
           'game',
           player,
+          BLOCK_SIZE,
         ),
       )
 
