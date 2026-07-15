@@ -1,7 +1,7 @@
 import { getVertices } from '../collision/math-extensions'
 import { LAYERS } from '../constants'
 import type { Engine } from '../engine'
-import type { GameObject } from '../game-object'
+import { GameObject } from '../game-object'
 import type { Transform, Vector2D } from '../types'
 import { Camera } from './camera'
 
@@ -10,6 +10,8 @@ type RayCastHit = {
   point: Vector2D
   distance: number
 }
+
+type CorrectedHit = { distance: number; wallHeight: number; object: GameObject }
 
 export class RayCastCamera extends Camera {
   private readonly backgroundLayer: HTMLCanvasElement
@@ -175,8 +177,8 @@ export class RayCastCamera extends Camera {
     for (let i = 0; i < rays; i++) {
       // Sample at the center of each vertical column to avoid half-column drift.
       const rayAngle = rotation - this.fovRad / 2 + (i + 0.5) * angleStep
-      const result = this.castRay(rayAngle, objects)
-      if (result) {
+      const results = this.castRay(rayAngle, objects)
+      for (const result of results) {
         this.drawItem(
           i,
           result.wallHeight,
@@ -220,30 +222,35 @@ export class RayCastCamera extends Camera {
 
     const hits = this.getHits(rayStart, dX, dY, gameObjects)
     if (!hits.length) {
-      return
+      return []
     }
 
-    let closestHit = hits[0].distance
-    let hit: RayCastHit = hits[0]
-    for (let i = 1; i < hits.length; i++) {
-      if (hits[i].distance < closestHit) {
-        hit = hits[i]
-        closestHit = hit.distance
+    hits.sort((h1, h2) => {
+      return h1.distance - h2.distance
+    })
+
+    const retHits: CorrectedHit[] = []
+    for (const hit of hits) {
+      const MIN_DIST = 0.5 // tune to your world units
+      const correctedDistance = Math.max(
+        hit.distance * Math.cos(rayAngle - this.anchor.transform.rotation),
+        MIN_DIST,
+      )
+
+      const renderHeight =
+        hit.object.transform.renderHeight ?? hit.object.transform.height
+      const wallHeight =
+        (renderHeight * this.projectionPlaneDistance) / correctedDistance
+
+      retHits.push({ distance: hit.distance, wallHeight, object: hit.object })
+
+      // Stop the raycast
+      if (hit.object.tags.includes('wall')) {
+        break
       }
     }
 
-    const MIN_DIST = 0.5 // tune to your world units
-    const correctedDistance = Math.max(
-      hit.distance * Math.cos(rayAngle - this.anchor.transform.rotation),
-      MIN_DIST,
-    )
-
-    const renderHeight =
-      hit.object.transform.renderHeight ?? hit.object.transform.height
-    const wallHeight =
-      (renderHeight * this.projectionPlaneDistance) / correctedDistance
-
-    return { distance: hit.distance, wallHeight, object: hit.object }
+    return retHits.reverse()
   }
 
   private getHits(

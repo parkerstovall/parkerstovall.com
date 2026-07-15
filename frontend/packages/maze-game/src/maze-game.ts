@@ -18,13 +18,10 @@ import {
   SecondBackground,
   Wall,
   Foreground,
+  Enemy,
 } from './game-objects'
 import { BLOCK_SIZE, GAME_WIDTH, GAME_HEIGHT, PLAYER_SIZE } from './constants'
-import { getTransforms } from './get-transforms'
-
-const randomInt = (min: number, max: number) => {
-  return Math.floor(Math.random() * (max - min + 1)) + min
-}
+import { addEnemies, getStartAndGoal, getTransforms } from './app-code'
 
 export function MazeGameScene() {
   const mazeGameScene: Scene = {
@@ -61,14 +58,6 @@ export function MazeGameScene() {
 
       engine.renderSize = 3000
       const teleCount = 6
-      const playerStart = randomInt(0, teleCount - 1)
-      const playerGoal = randomInt(0, teleCount - 1)
-
-      let foundTele = 0
-      let playerX = 0
-      let playerY = 0
-      let targetX = 0
-      let targetY = 0
 
       const map = generateMap({
         ...DefaultOptions,
@@ -81,40 +70,24 @@ export function MazeGameScene() {
         },
       })
 
-      // Assemble Player Start
-      for (const row of map) {
-        const col = row[0]
-        if (col?.type !== 'teleporter') {
-          continue
-        }
+      const { playerX, playerY, targetX, targetY } = getStartAndGoal(
+        map,
+        teleCount,
+      )
 
-        if (foundTele % teleCount === playerStart) {
-          playerX = col.position.x * BLOCK_SIZE
-          playerY = col.position.y * BLOCK_SIZE
-          col.type = 'empty'
-          break
-        }
-
-        foundTele++
+      const playerPos: Transform = {
+        rotation: 0,
+        x: playerX + BLOCK_SIZE / 2 - PLAYER_SIZE / 2,
+        y: playerY + BLOCK_SIZE / 2 - PLAYER_SIZE / 2,
+        width: PLAYER_SIZE,
+        height: PLAYER_SIZE,
       }
 
-      foundTele = 0
+      const player = new MazePlayer(engine, playerPos, targetX, targetY)
+      engine.addPlayer(player)
 
-      // Assemble Player Goal
-      for (const row of map) {
-        const col = row[row.length - 1]
-        if (col?.type !== 'teleporter') {
-          continue
-        }
-
-        if (foundTele % teleCount === playerGoal) {
-          targetX = col.position.x * BLOCK_SIZE
-          targetY = col.position.y * BLOCK_SIZE
-          col.type = 'empty'
-          break
-        }
-
-        foundTele++
+      for (const transform of addEnemies(map, playerX, playerY)) {
+        engine.addObject(new Enemy(engine, transform, player, map))
       }
 
       const transforms = getTransforms(map)
@@ -125,23 +98,6 @@ export function MazeGameScene() {
 
       engine.addObject(new Background(engine, GAME_WIDTH, GAME_HEIGHT))
       engine.addObject(new SecondBackground(engine, GAME_WIDTH, GAME_HEIGHT))
-
-      const playerPos: Transform = {
-        rotation: 0,
-        x: playerX + BLOCK_SIZE / 2 - PLAYER_SIZE / 2,
-        y: playerY + BLOCK_SIZE / 2 - PLAYER_SIZE / 2,
-        width: PLAYER_SIZE,
-        height: PLAYER_SIZE,
-      }
-
-      const player = new MazePlayer(
-        engine,
-        playerPos,
-        LAYERS.GAME_LAYER,
-        targetX,
-        targetY,
-      )
-      engine.addPlayer(player)
 
       engine.addCamera(
         new RayCastCamera(
@@ -160,25 +116,6 @@ export function MazeGameScene() {
           player,
         ),
       )
-
-      // const maxWidth = map[0].length * BLOCK_SIZE
-      // const maxHeight = map.length * BLOCK_SIZE
-      // engine.addCamera(
-      //   new TwoDimensionalCamera(
-      //     engine,
-      //     {
-      //       x: playerPos.x,
-      //       y: playerPos.y,
-      //       width: 0,
-      //       height: 0,
-      //       rotation: 0,
-      //     },
-      //     LAYERS.UI_LAYER,
-      //     maxWidth,
-      //     maxHeight,
-      //     'game2',
-      //   ),
-      // )
 
       engine.addObject(
         new TimerObject(

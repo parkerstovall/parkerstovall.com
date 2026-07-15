@@ -17,6 +17,7 @@ export class Engine {
   private readonly collisionManager = new CollisionManager()
 
   private lastFrameStart = 0
+  private activeAnimationFrame: number | null = null
   private scene?: Scene
   private activeChunks: Chunk[] | null = null
 
@@ -37,13 +38,16 @@ export class Engine {
     if (this.isPaused) {
       this.isPaused = false
       this.lastFrameStart = performance.now()
-      requestAnimationFrame(() => this.update())
+      this.scheduleNextFrame()
     } else {
       this.isPaused = true
+      this.cancelAnimationFrame()
     }
   }
 
   public setScene(scene: Scene) {
+    this.cancelAnimationFrame()
+    this.isPaused = false
     this.scene?.destroy?.()
     this.reset()
     this.scene = scene
@@ -60,7 +64,10 @@ export class Engine {
     }
 
     this.lastFrameStart = performance.now()
-    requestAnimationFrame(() => this.update())
+
+    if (!this.isPaused) {
+      this.scheduleNextFrame()
+    }
   }
 
   public addPlayer(player: GameObject) {
@@ -197,6 +204,7 @@ export class Engine {
   }
 
   private update() {
+    this.activeAnimationFrame = null
     if (this.isPaused) {
       return
     }
@@ -236,15 +244,33 @@ export class Engine {
       this.checkGameObjectChunk(gameObject)
     }
 
-    for (const camera of this.cameras) {
-      camera.paint(this.getActiveChunks())
-    }
-
     this.collisionManager.detectChunkCollisions(
       this.getActiveChunks(),
       this.renderSize,
     )
-    requestAnimationFrame(() => this.update())
+
+    for (const camera of this.cameras) {
+      camera.paint(this.getActiveChunks())
+    }
+
+    this.scheduleNextFrame()
+  }
+
+  private scheduleNextFrame() {
+    if (this.isPaused || this.activeAnimationFrame !== null) {
+      return
+    }
+
+    this.activeAnimationFrame = requestAnimationFrame(() => this.update())
+  }
+
+  private cancelAnimationFrame() {
+    if (this.activeAnimationFrame === null) {
+      return
+    }
+
+    window.cancelAnimationFrame(this.activeAnimationFrame)
+    this.activeAnimationFrame = null
   }
 
   private checkGameObjectChunk(gameObject: GameObject) {
@@ -331,9 +357,7 @@ export class Engine {
   }
 
   private reset() {
-    if (this.isPaused) {
-      this.togglePause()
-    }
+    this.cancelAnimationFrame()
 
     this.setDirty()
     for (const camera of this.cameras) {
