@@ -1,5 +1,11 @@
 import { vi, describe, it, expect, afterEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
 import {
   RouterProvider,
   createMemoryHistory,
@@ -36,6 +42,7 @@ function renderAt(pathname: string) {
 describe('app routes', () => {
   afterEach(() => {
     vi.clearAllMocks()
+    cleanup()
   })
 
   it('renders the home route links', async () => {
@@ -69,5 +76,34 @@ describe('app routes', () => {
     await waitFor(() => {
       expect(MazeGameScene).toHaveBeenCalled()
     })
+  })
+
+  it('opens and closes the utilities menu from the root layout', async () => {
+    renderAt('/')
+
+    const utilitiesButton = await screen.findByRole('button', {
+      name: 'Utilities',
+    })
+
+    expect(utilitiesButton.getAttribute('aria-expanded')).toBe('false')
+
+    fireEvent.click(utilitiesButton)
+    expect(utilitiesButton.getAttribute('aria-expanded')).toBe('true')
+
+    fireEvent.mouseDown(document.body)
+    expect(utilitiesButton.getAttribute('aria-expanded')).toBe('false')
+  })
+
+  it('renders the QR code generator route', async () => {
+    renderAt('/utilities/qr-code-generator')
+
+    expect(
+      await screen.findByRole('heading', { name: 'QR Code Generator' }),
+    ).toBeTruthy()
+    expect(screen.getByLabelText('URL or text')).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: 'Generate QR Code' }),
+    ).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Save QR Code' })).toBeTruthy()
   })
 })
